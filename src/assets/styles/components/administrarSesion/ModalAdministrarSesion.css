@@ -1,0 +1,27 @@
+#btnIniciarSesion {
+    margin-left: 5em;
+}
+
+#btnRegistroUsuario {
+    margin-left: 5em;
+}
+
+#btnFormIniciarSesion{
+    margin-left: 11em;
+    margin-top: 2em;
+    border-color: green;
+}
+
+#btnFormRegistrarUsuario{
+    margin-left: 11em;
+    background-color: green;
+    border-color: green;
+}
+
+#formBasicEmail{
+    margin-top: 2em;
+}
+
+#formBasicPassword{
+    margin-top: 2em;
+}

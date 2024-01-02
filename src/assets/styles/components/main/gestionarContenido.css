@@ -1,0 +1,4 @@
+.contenedorGestion {
+    display: flex;
+    justify-content: space-between; /* Puedes ajustar el espaciado entre los componentes */
+  }
