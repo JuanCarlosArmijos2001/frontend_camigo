@@ -35,24 +35,20 @@ const RegistrarUsuario = () => {
         console.log("External ID:")
         console.log(usuario.externalId);
         const emptyFields = Object.values(usuario).some((field) => field.trim() === "");
-        //Control campos vacios
         if (emptyFields) {
             setError('Por favor, completa todos los campos.');
             return;
         }
-        // Validar que haya exactamente dos nombres
         const regexNombres = /^\S+(\s\S+){1}$/;
         if (!regexNombres.test(usuario.nombres.trim())) {
             setError("Por favor, ingrese sus dos nombres.");
             return;
         }
-        // Validar que haya exactamente dos apellidos
         const regexApellidos = /^\S+(\s\S+){1}$/;
         if (!regexApellidos.test(usuario.apellidos.trim())) {
             setError("Por favor, ingrese sus dos apellidos.");
             return;
         }
-        //Control email valido
         if (!validateEmail(usuario.email)) {
             setError('Por favor, ingresa un correo electrónico válido.');
             return;

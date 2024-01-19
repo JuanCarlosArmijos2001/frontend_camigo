@@ -1,57 +1,55 @@
-import React from "react";
-import GestionarTemas from "./temas/GestionarTemas";
-import GestionarSubtemas from "./subtemas/GestionarSubtemas";
-import GestionarEjercicio from "./ejercicios/GestionarEjercicios";
-import GestionarPregunta from "./preguntas/GestionarPreguntas";
-import CEditor from "./CEditor";
-import CardSeleccionarTema from "../utilities/CardSeleccionarTema";
-import CardSeleccionarSubtema from "../utilities/CardSeleccionarSubtema";
-import CardSeleccionarEjercicio from "../utilities/CardSeleccionarEjercicio";
-import { Container, Row, Col, Button } from "react-bootstrap";
+// import React, { useEffect } from "react";
+// import "../../assets/styles/components/main/main.css"
+// import { useSesionUsuario } from "../../context/SesionUsuarioContext";
+// import VisualizarContenido from "./visualizarContenido/VisualizarContenido";
+// import PaginaPrincipalDocente from "./paginaPrincipalDocente/PaginaPrincipalDocente";
+
+// export default function Main() {
+//   const { usuarioDetalles } = useSesionUsuario();
+
+//   useEffect(() => {
+//     console.log("Sesión en Main: ", usuarioDetalles)
+//   }, [usuarioDetalles]);
+
+//   return (
+//     <div className="contenedorPD">
+//       {usuarioDetalles && (
+//         <>
+//           {usuarioDetalles.detallesRol.tipo === "docente" && <PaginaPrincipalDocente />}
+//           {usuarioDetalles.detallesRol.tipo === "estudiante" && <VisualizarContenido />}
+//         </>
+//       )}
+//     </div>
+//   );
+// }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------
+import React, { useEffect } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import { useSesionUsuario } from "../../context/SesionUsuarioContext";
+import VisualizarContenido from "./visualizarContenido/VisualizarContenido";
+import PaginaPrincipalDocente from "./paginaPrincipalDocente/PaginaPrincipalDocente";
 import "../../assets/styles/components/main/main.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useTemaSeleccionado } from "../../context/TemaSeleccionadoContext";
-import { useSubtemaSeleccionado } from "../../context/SubtemaSeleccionadoContext";
-import { useEjercicioSeleccionado } from "../../context/EjercicioSeleccionadoContext";
 
 export default function Main() {
+  const { usuarioDetalles } = useSesionUsuario();
 
-  const { temaSeleccionado } = useTemaSeleccionado();
-  const { subtemaSeleccionado } = useSubtemaSeleccionado();
-  const { ejercicioSeleccionado } = useEjercicioSeleccionado();
+  useEffect(() => {
+    console.log("Sesión en Main: ", usuarioDetalles);
+  }, [usuarioDetalles]);
+
   return (
-    <div>
-      <Container fluid id="contenedor">
-        <Row id="fila1">
-          <Col id="columna1">
-            <GestionarTemas />
-          </Col>
-          <Col id="columna2">
-            {temaSeleccionado ? (
-              <GestionarSubtemas />
-            ) : (
-              <CardSeleccionarTema />
-            )}
-
-          </Col>
-        </Row>
-        <Row id="fila2">
-          <Col id="columna1">
-            {subtemaSeleccionado ? (
-              <GestionarEjercicio />
-            ) : (
-              <CardSeleccionarSubtema />
-            )}
-          </Col>
-          <Col id="columna2">
-            {ejercicioSeleccionado ? (
-              <GestionarPregunta />
-            ) : (
-              <CardSeleccionarEjercicio />
-            )}
-          </Col>
-        </Row>
-      </Container>
-    </div>
+    <Container className="contenedorPD">
+      <Row>
+        <Col xs={12} className="colPagDocenteVisContenido">
+          {usuarioDetalles && (
+            <>
+              {usuarioDetalles.detallesRol.tipo === "docente" && <PaginaPrincipalDocente />}
+              {usuarioDetalles.detallesRol.tipo === "estudiante" && <VisualizarContenido />}
+            </>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 }
+

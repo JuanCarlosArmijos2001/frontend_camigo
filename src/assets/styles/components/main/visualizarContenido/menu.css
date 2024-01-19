@@ -1,0 +1,8 @@
+.buttonGroupContainer {
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.buttonGroup {
+    width: 100%;
+}

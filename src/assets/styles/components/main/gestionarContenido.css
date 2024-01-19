@@ -1,4 +1,43 @@
-.contenedorGestion {
-    display: flex;
-    justify-content: space-between; /* Puedes ajustar el espaciado entre los componentes */
+/* #contPrincipal {
+  margin-left: 10px;
+}
+
+#fila1,
+#fila2 {
+  margin-top: 40px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#columna1,
+#columna2 {
+  box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content-with-margin {
+  margin: 20px;
+} */
+
+/* --------------- */
+.filaUno,
+.filaDos {
+  margin-top: 40px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.columnaUno,
+.columnaDos {
+  box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+@media (max-width: 767px) {
+  #contPrincipal {
+    margin-left: 0;
   }
+}
+
+@media (max-width: 575px) {
+  .content-with-margin {
+    margin-bottom: 0;
+  }
+}

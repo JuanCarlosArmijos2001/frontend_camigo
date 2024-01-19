@@ -1,0 +1,15 @@
+#tituloComponente {
+    font-size: 40px;
+    font-weight: bold; 
+    margin-bottom: 15px;
+}
+#btnComponente{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 0px;
+}
+#columna{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+}

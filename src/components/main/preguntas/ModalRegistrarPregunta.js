@@ -145,7 +145,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
                     <Modal.Title>Crea una nueva pregunta de control</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container fluid id="contenedor">
+                    <Container  id="contenedor">
                         <Row id="fila1">
                             <Col id="columna1">
                                 <div className="contenedorFormulario">
@@ -215,19 +215,6 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
                                                 />
                                             </label>
                                         </div>
-                                        {/* <div className="grupoFormulario">
-                                            <label className="etiqueta">
-                                                Respuesta correcta:
-                                                <br />
-                                                <br />
-                                                <ReactQuill
-                                                    value={respuesta_correcta}
-                                                    onChange={handleRespuesta_correcta_Change}
-                                                    modules={{ toolbar: toolbarOptions }}
-                                                    className="small-textarea"
-                                                />
-                                            </label>
-                                        </div> */}
                                         <div className="grupoFormulario">
                                             <label className="etiqueta">
                                                 Respuesta correcta:
@@ -262,7 +249,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
                             </Col>
                             <Col id="columna2">
                                 <div style={{ textAlign: "justify" }}>
-                                    <h2>Vista previa</h2>
+                                    <h2>Previsualizar</h2>
                                     <div
                                         style={{ textAlign: "justify" }}
                                         dangerouslySetInnerHTML={{

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Container, Row, Col } from "react-bootstrap";
 import "../../../assets/styles/components/main/temas/gestionarTemas.css";
 import Cargando from "../../utilities/Cargando";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
@@ -22,10 +22,31 @@ const GestionarEjercicios = () => {
     }, [subtemaSeleccionado]);
 
 
+    // const cargarEjercicios = () => {
+    //     axios
+    //         .post("http://localhost:5000/ejercicios/listarEjercicios", {
+    //             idSubtema: subtemaSeleccionado.id,
+    //         })
+    //         .then((response) => {
+    //             if (response.data.en === 1) {
+    //                 setEjercicios(response.data.ejercicios);
+    //                 setExisteEjercicios(true);
+    //             } else {
+    //                 console.log("Hubo un problema al cargar los ejercicios");
+    //                 setExisteEjercicios(false);
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error al obtener los ejercicios:", error);
+    //         });
+    // };
+
+
     const cargarEjercicios = () => {
         axios
             .post("http://localhost:5000/ejercicios/listarEjercicios", {
                 idSubtema: subtemaSeleccionado.id,
+                mensaje: "ejercicios", // Agregado para obtener solo ejercicios activos
             })
             .then((response) => {
                 if (response.data.en === 1) {
@@ -40,6 +61,7 @@ const GestionarEjercicios = () => {
                 console.error("Error al obtener los ejercicios:", error);
             });
     };
+
 
     const activarDesactivarEjercicio = () => {
         if (ejercicioSeleccionado) {
@@ -84,16 +106,104 @@ const GestionarEjercicios = () => {
         : ejercicios;
 
 
+    // return (
+    //     <div>
+    //         {existeEjercicios ? (
+    //             ejercicios.length > 0 ? (
+    //                 <div className="contenedorPrincipal">
+    //                     <div className="informacionTema">
+    //                         <h1>Ejercicios</h1>
+    //                         <p>Los ejercicios con fondo color rojo están desactivados</p>
+    //                         <p>Es necesario seleccionar un ejercicio para editar o para activar/desactivar.</p>
+    //                     </div>
+    //                     <div className="contenedorTabla">
+    //                         <Form.Group controlId="formBuscar">
+    //                             <Form.Control
+    //                                 type="text"
+    //                                 placeholder="Buscar ejercicio"
+    //                                 value={term}
+    //                                 onChange={(e) => setTerm(e.target.value)}
+    //                             />
+    //                         </Form.Group>
+    //                         <br />
+    //                         <table className="tablaTemas">
+    //                             <thead>
+    //                                 <tr>
+    //                                     <th className="tituloTabla">Ejercicios existentes</th>
+    //                                 </tr>
+    //                             </thead>
+    //                             <tbody>
+    //                                 {filteredEjercicios.length > 0 ? (
+    //                                     filteredEjercicios.map((ejercicio, index) => (
+    //                                         <tr
+    //                                             key={index}
+    //                                             onClick={() => actualizarEjercicioSeleccionado(ejercicio)}
+    //                                             className={`
+    //                     ${ejercicio.estado === -1 ? "redRow" : ""}
+    //                     ${ejercicioSeleccionado && ejercicioSeleccionado.id === ejercicio.id
+    //                                                     ? "selectedRow"
+    //                                                     : ""}
+    //                   `}
+    //                                         >
+    //                                             <td>{cleanHtmlTags(ejercicio.titulo)}</td>
+    //                                         </tr>
+    //                                     ))
+    //                                 ) : (
+    //                                     <tr>
+    //                                         <td colSpan="1">No se encontraron ejercicios</td>
+    //                                     </tr>
+    //                                 )}
+    //                             </tbody>
+    //                         </table>
+    //                     </div>
+    //                     <div className="botonesDerecha">
+    //                         <ModalRegistrarEjercicio cargarEjercicios={cargarEjercicios} ejercicios={ejercicios} />
+    //                         <ModalEditarEjercicio
+    //                             cargarEjercicios={cargarEjercicios}
+    //                             ejercicioParaEditar={ejercicioSeleccionado}
+    //                         />
+    //                         <Button
+    //                             variant="danger"
+    //                             className="botonActivarDesactivarTema"
+    //                             disabled={!ejercicioSeleccionado}
+    //                             onClick={activarDesactivarEjercicio}
+    //                         >
+    //                             {getButtonText()}
+    //                         </Button>
+    //                     </div>
+    //                 </div>
+    //             ) : (
+    //                 <Cargando />
+    //             )
+    //         ) : (
+    //             <Card style={{ width: '18rem', marginTop: '75px', marginLeft: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    //                 <Card.Img variant="top" src={Imagen} />
+    //                 <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    //                     <Card.Title>Abre nuevos caminos: Este subtema está esperando tus ejercicios.</Card.Title>
+    //                     <Card.Text style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+    //                         <ModalRegistrarEjercicio cargarEjercicios={cargarEjercicios} ejercicios={ejercicios} />
+    //                     </Card.Text>
+    //                 </Card.Body>
+    //             </Card>
+    //         )
+    //         }
+    //     </div>
+
+    // );
     return (
-        <div>
+        <Container>
             {existeEjercicios ? (
-                ejercicios.length > 0 ? (
-                    <div className="contenedorPrincipal">
-                        <div className="informacionTema">
-                            <h1>Ejercicios</h1>
-                            <p>Los ejercicios con fondo color rojo están desactivados</p>
-                            <p>Es necesario seleccionar un ejercicio para editar o para activar/desactivar.</p>
+                <Row>
+                    <Col xs={12}>
+                        <div className="contenedorPrincipal">
+                            <div className="informacionTema">
+                                <h1>Ejercicios</h1>
+                                <p>Los ejercicios con fondo color rojo están desactivados</p>
+                                <p>Es necesario seleccionar un ejercicio para editar o para activar/desactivar.</p>
+                            </div>
                         </div>
+                    </Col>
+                    <Col xs={12}>
                         <div className="contenedorTabla">
                             <Form.Group controlId="formBuscar">
                                 <Form.Control
@@ -111,24 +221,31 @@ const GestionarEjercicios = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredEjercicios.map((ejercicio, index) => (
-                                        <tr
-                                            key={index}
-                                            onClick={() => actualizarEjercicioSeleccionado(ejercicio)}
-                                            className={`
-                ${ejercicio.estado === -1 ? "redRow" : ""}
-                ${ejercicioSeleccionado && ejercicioSeleccionado.id === ejercicio.id
-                                                    ? "selectedRow"
-                                                    : ""
-                                                }
-              `}
-                                        >
-                                            <td>{cleanHtmlTags(ejercicio.titulo)}</td>
+                                    {filteredEjercicios.length > 0 ? (
+                                        filteredEjercicios.map((ejercicio, index) => (
+                                            <tr
+                                                key={index}
+                                                onClick={() => actualizarEjercicioSeleccionado(ejercicio)}
+                                                className={`
+                              ${ejercicio.estado === -1 ? "redRow" : ""}
+                              ${ejercicioSeleccionado && ejercicioSeleccionado.id === ejercicio.id
+                                                        ? "selectedRow"
+                                                        : ""}
+                            `}
+                                            >
+                                                <td>{cleanHtmlTags(ejercicio.titulo)}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="1">No se encontraron ejercicios</td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
+                    </Col>
+                    <Col xs={12}>
                         <div className="botonesDerecha">
                             <ModalRegistrarEjercicio cargarEjercicios={cargarEjercicios} ejercicios={ejercicios} />
                             <ModalEditarEjercicio
@@ -144,24 +261,24 @@ const GestionarEjercicios = () => {
                                 {getButtonText()}
                             </Button>
                         </div>
-                    </div>
-                ) : (
-                    <Cargando />
-                )
+                    </Col>
+                </Row>
             ) : (
-                <Card style={{ width: '18rem', marginTop: '75px', marginLeft: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Card.Img variant="top" src={Imagen} />
-                    <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Card.Title>Abre nuevos caminos: Este subtema está esperando tus ejercicios.</Card.Title>
-                        <Card.Text style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                            <ModalRegistrarEjercicio cargarEjercicios={cargarEjercicios} ejercicios={ejercicios} />
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-            )
-            }
-        </div>
-
+                <Row>
+                    <Col xs={12}>
+                        <Card style={{ width: '18rem', marginTop: '75px', marginLeft: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Card.Img variant="top" src={Imagen} />
+                            <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Card.Title>Abre nuevos caminos: Este subtema está esperando tus ejercicios.</Card.Title>
+                                <Card.Text style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                                    <ModalRegistrarEjercicio cargarEjercicios={cargarEjercicios} ejercicios={ejercicios} />
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            )}
+        </Container>
     );
 };
 

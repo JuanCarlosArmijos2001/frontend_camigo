@@ -1,0 +1,24 @@
+#columna25 {
+    background-color: white;
+    border: 5px solid black;
+    
+}
+
+#columnaPrincipal {
+    background-color: white;
+    border: 5px solid darkslategray;
+}
+
+#contenedorVC {
+    background-color: yellow;
+    border: 5px solid red;
+    padding: 0px;
+    margin: 0px;
+}
+
+#filaVC {
+    background-color: pink;
+    border: 5px solid green;
+    padding: 0px;
+    margin: 0px;
+}

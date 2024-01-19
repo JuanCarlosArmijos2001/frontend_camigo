@@ -1,0 +1,18 @@
+.admin{
+    background-color: brown;
+    min-height: 100vh;
+    /* padding: 10px; */
+    /* max-width: 100%; */
+    /* border: 5px solid blue; */
+}
+.columna{
+    margin: 0px;
+    padding: 0px;
+}
+
+.filaPaginaInicio{
+    background-color: chartreuse;
+    /* padding: 10px; */
+    /* width: 100%; */
+    /* border: 5px solid coral; */
+}

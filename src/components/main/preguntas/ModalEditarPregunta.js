@@ -146,7 +146,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
                     <Modal.Title>Edita la pregunta de control seleccionada</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container fluid id="contenedor">
+                    <Container id="contenedor">
                         <Row id="fila1">
                             <Col id="columna1">
                                 <div className="contenedorFormulario">
@@ -216,34 +216,11 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
                                                 />
                                             </label>
                                         </div>
-                                        {/* <div className="grupoFormulario">
-                                            <label className="etiqueta">
-                                                Respuesta correcta:
-                                                <br />
-                                                <br />
-                                                <ReactQuill
-                                                    value={respuesta_correcta}
-                                                    onChange={handleRespuesta_correcta_Change}
-                                                    modules={{ toolbar: toolbarOptions }}
-                                                    className="small-textarea"
-                                                />
-                                            </label>
-                                        </div> */}
                                         <div className="grupoFormulario">
                                             <label className="etiqueta">
                                                 Respuesta correcta:
                                                 <br />
                                                 <br />
-                                                {/* <select
-                                                    value={respuesta_correcta}
-                                                    onChange={(e) => setRespuesta_correcta(e.target.value)}
-                                                >
-                                                    <option value="">Selecciona la respuesta correcta</option>
-                                                    <option value="a">Opción A</option>
-                                                    <option value="b">Opción B</option>
-                                                    <option value="c">Opción C</option>
-                                                    <option value="d">Opción D</option>
-                                                </select> */}
                                                 <select
                                                     value={respuesta_correcta}
                                                     onChange={(e) => setRespuesta_correcta(e.target.value)}
@@ -274,7 +251,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
                             </Col>
                             <Col id="columna2">
                                 <div style={{ textAlign: "justify" }}>
-                                    <h2>Vista previa</h2>
+                                    <h2>Previsualizar</h2>
                                     <div
                                         style={{ textAlign: "justify" }}
                                         dangerouslySetInnerHTML={{

@@ -131,7 +131,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
                     <Modal.Title>Crea un nuevo subtema</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container fluid id="contenedor">
+                    <Container id="contenedor">
                         <Row id="fila1">
                             <Col id="columna1">
                                 <div className="contenedorFormulario">
@@ -213,7 +213,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
                             </Col>
                             <Col id="columna2">
                                 <div style={{ textAlign: "justify" }}>
-                                    <h2>Vista previa</h2>
+                                    <h2>Previsualizar</h2>
                                     <div
                                         style={{ textAlign: "justify" }}
                                         dangerouslySetInnerHTML={{

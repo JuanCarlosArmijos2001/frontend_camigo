@@ -121,7 +121,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
                     <Modal.Title>Edita el ejercicio seleccionado</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container fluid id="contenedor">
+                    <Container id="contenedor">
                         <Row id="fila1">
                             <Col id="columna1">
                                 <div className="contenedorFormulario">
@@ -190,7 +190,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
                             </Col>
                             <Col id="columna2">
                                 <div style={{ textAlign: "justify" }}>
-                                    <h2>Vista previa</h2>
+                                    <h2>Previsualizar</h2>
                                     <div
                                         style={{ textAlign: "justify" }}
                                         dangerouslySetInnerHTML={{

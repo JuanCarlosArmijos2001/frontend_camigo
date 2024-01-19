@@ -2,12 +2,15 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./assets/styles/layouts/index.css";
 import Admin from "./layouts/Admin";
+import { SesionUsuarioContextProvider } from "../src/context/SesionUsuarioContext";
 //import reportWebVitals from './reportWebVitals';
 
 const root = createRoot(document.getElementById("root"));
 root.render(
   <StrictMode>
-    <Admin />
+    <SesionUsuarioContextProvider>
+      <Admin />
+    </SesionUsuarioContextProvider>
   </StrictMode>
 );
 

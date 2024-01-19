@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Container, Row, Col } from "react-bootstrap";
 import "../../../assets/styles/components/main/temas/gestionarTemas.css";
 import Cargando from "../../utilities/Cargando";
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
@@ -23,10 +23,30 @@ const GestionarSubtemas = () => {
   }, [temaSeleccionado]);
 
 
+  // const cargarSubtemas = () => {
+  //   axios
+  //     .post("http://localhost:5000/subtemas/listarSubtemas", {
+  //       idTema: temaSeleccionado.id,
+  //     })
+  //     .then((response) => {
+  //       if (response.data.en === 1) {
+  //         setSubtemas(response.data.subtemas);
+  //         setExisteSubtemas(true);
+  //       } else {
+  //         console.log("Hubo un problema al cargar los subtemas");
+  //         setExisteSubtemas(false);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error al obtener los subtemas:", error);
+  //     });
+  // };
+
   const cargarSubtemas = () => {
     axios
       .post("http://localhost:5000/subtemas/listarSubtemas", {
         idTema: temaSeleccionado.id,
+        mensaje: "subtemas",
       })
       .then((response) => {
         if (response.data.en === 1) {
@@ -84,18 +104,20 @@ const GestionarSubtemas = () => {
     )
     : subtemas;
 
-
   return (
-    <div>
+    <Container>
       {existeSubtemas ? (
-        subtemas.length > 0 ? (
-          <div className="contenedorPrincipal">
-            <div className="informacionTema">
-              <h1>Subtemas</h1>
-              <p>Los subtemas con fondo color rojo están desactivados</p>
-              <p>Es necesario seleccionar un subtema para editar o para activar/desactivar.</p>
-
+        <Row>
+          <Col xs={12}>
+            <div className="contenedorPrincipal">
+              <div className="informacionTema">
+                <h1>Subtemas</h1>
+                <p>Los subtemas con fondo color rojo están desactivados</p>
+                <p>Es necesario seleccionar un subtema para editar o para activar/desactivar.</p>
+              </div>
             </div>
+          </Col>
+          <Col xs={12}>
             <div className="contenedorTabla">
               <Form.Group controlId="formBuscar">
                 <Form.Control
@@ -113,24 +135,31 @@ const GestionarSubtemas = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredSubtemas.map((subtema, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => actualizarSubtemaSeleccionado(subtema)}
-                      className={`
-                ${subtema.estado === -1 ? "redRow" : ""}
-                ${subtemaSeleccionado && subtemaSeleccionado.id === subtema.id
-                          ? "selectedRow"
-                          : ""
-                        }
-              `}
-                    >
-                      <td>{cleanHtmlTags(subtema.titulo)}</td>
+                  {filteredSubtemas.length > 0 ? (
+                    filteredSubtemas.map((subtema, index) => (
+                      <tr
+                        key={index}
+                        onClick={() => actualizarSubtemaSeleccionado(subtema)}
+                        className={`
+                          ${subtema.estado === -1 ? "redRow" : ""}
+                          ${subtemaSeleccionado && subtemaSeleccionado.id === subtema.id
+                            ? "selectedRow"
+                            : ""}
+                        `}
+                      >
+                        <td>{cleanHtmlTags(subtema.titulo)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="1">No se encontraron subtemas</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
+          </Col>
+          <Col xs={12}>
             <div className="botonesDerecha">
               <ModalRegistrarSubtema cargarSubtemas={cargarSubtemas} subtemas={subtemas} />
               <ModalEditarSubtema
@@ -146,25 +175,24 @@ const GestionarSubtemas = () => {
                 {getButtonText()}
               </Button>
             </div>
-          </div>
-        ) : (
-          <Cargando />
-        )
+          </Col>
+        </Row>
       ) : (
-        <div>
-          <Card style={{ width: '18rem', marginTop: '75px', marginLeft: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Card.Img variant="top" src={Imagen} />
-            <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Card.Title>Da el primer paso: ¡Crea el primer subtema en este tema emocionante!</Card.Title>
-              <Card.Text style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                <ModalRegistrarSubtema cargarSubtemas={cargarSubtemas} subtemas={subtemas} />
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-      )
-      }
-    </div>
+        <Row>
+          <Col xs={12}>
+            <Card style={{ width: '18rem', marginTop: '75px', marginLeft: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Card.Img variant="top" src={Imagen} />
+              <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Card.Title>Da el primer paso: ¡Crea el primer subtema en este tema emocionante!</Card.Title>
+                <Card.Text style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                  <ModalRegistrarSubtema cargarSubtemas={cargarSubtemas} subtemas={subtemas} />
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
+    </Container>
   );
 };
 
