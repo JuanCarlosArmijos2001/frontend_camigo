@@ -1,0 +1,25 @@
+/* Estilos para el componente MostrarContenido */
+.correct-answer {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.incorrect-answer {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Estilos adicionales para las opciones de respuesta */
+.form-check-label {
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+/* Personalización de los botones de opción */
+.form-check-input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}

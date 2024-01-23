@@ -8,11 +8,11 @@ const VisualizarContenido = () => {
     return (
         <Container id='contenedorVC' fluid>
             <Row id='filaVC'>
-                <Col md={3} id="columna25">
+                <Col md={4} id="columna25">
                     <Menu />
                     
                 </Col>
-                <Col md={9} id="columnaPrincipal">
+                <Col md={8} id="columnaPrincipal">
                     <MostrarContenido />
                     
                 </Col>

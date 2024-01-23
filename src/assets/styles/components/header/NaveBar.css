@@ -4,21 +4,21 @@
 }
 
 .tituloNavBar {
-    margin: 18px;
+    margin: 15px;
     color: white;
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
 }
 
 .nombreUsuario {
-    margin: 23px;
+    margin: 22px;
     color: white;
     font-size: 21px;
     font-weight: bold;
 }
 
 #botonCerrarSesion {
-    margin: 18px;
+    margin: 15px;
     color: white;
     background-color: red;
     font-size: 15px;
@@ -27,4 +27,8 @@
 
 #filaNavBar{
     border: 50px solid red;
+}
+
+#dropdown-basic{
+    margin: 22px;
 }

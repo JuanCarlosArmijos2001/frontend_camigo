@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import axios from "axios";
 import DOMPurify from "dompurify";
 import "react-quill/dist/quill.snow.css";
+import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 
 export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
     const [show, setShow] = useState(false);
@@ -16,6 +17,7 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
     const [recursos, setRecursos] = useState("");
     const [showAlert, setShowAlert] = useState(false);
     const formRef = useRef(null);
+    const { usuarioDetalles } = useSesionUsuario();
 
 
     const handleTituloChange = (content) => {
@@ -56,6 +58,10 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
         return textOnly.length > 0;
     };
 
+    const cleanHtmlTags = (htmlContent) => {
+        const doc = new DOMParser().parseFromString(htmlContent, "text/html");
+        return doc.body.textContent || "";
+    };
 
 
     const handleSubmit = async (e) => {
@@ -65,14 +71,14 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
             setShowAlert(true);
             return;
         }
-    
+
         await editarTema();
         setTitulo("");
         setObjetivos("");
         setDescripcion("");
         setRecursos("");
     };
-    
+
     const editarTema = async () => {
         try {
             const datosFormulario = {
@@ -82,7 +88,7 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
                 descripcion: DOMPurify.sanitize(descripcion),
                 recursos: DOMPurify.sanitize(recursos),
             };
-    
+
             const response = await axios.post(
                 "http://localhost:5000/temas/editarTema",
                 datosFormulario,
@@ -93,11 +99,33 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
                     },
                 }
             );
-    
+
             if (response.data.en === 1) {
-                console.log("Se editó el tema correctamente");
-                cargarTemas();
-                handleClose();
+                const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el tema con el título: "${cleanHtmlTags(titulo)}"`;
+
+                console.log(mensaje);
+
+                // Llama al endpoint de historial para registrar el cambio
+                const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                axios
+                    .post("http://localhost:5000/historial/registrarCambio", {
+                        tipoEntidad: "tema",
+                        idTema: temaParaEditar.id,
+                        detalles: mensaje,
+                        personaId: personaId,
+                    })
+                    .then((historialResponse) => {
+                        if (historialResponse.data.en === 1) {
+                            console.log("Cambio registrado en el historial");
+                            cargarTemas();
+                            handleClose();
+                        } else {
+                            console.log("No se pudo registrar el cambio en el historial");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al registrar el cambio en el historial:", error);
+                    });
             } else {
                 console.log("No se pudo editar el tema");
             }

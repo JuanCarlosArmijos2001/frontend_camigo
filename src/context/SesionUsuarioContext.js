@@ -104,7 +104,7 @@ export const SesionUsuarioContextProvider = ({ children }) => {
             const { en, m, detallesPersona, detallesCuenta, detallesRol } = response.data;
 
             if (en === 1) {
-                setUsuarioDetalles({ detallesPersona, detallesCuenta, detallesRol });
+                setUsuarioDetalles({ userId, detallesPersona, detallesCuenta, detallesRol });
                 console.log('Detalles del usuario obtenidos correctamente:', detallesPersona, detallesCuenta, detallesRol);
             } else {
                 console.error('Error al obtener detalles del usuario:', m);

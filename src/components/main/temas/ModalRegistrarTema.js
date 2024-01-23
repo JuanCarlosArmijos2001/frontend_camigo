@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import ReactQuill from "react-quill";
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import "react-quill/dist/quill.snow.css";
 import "../../../assets/styles/components/main/temas/modalRegistrarTema.css";
 
@@ -16,6 +17,7 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
     const [objetivos, setObjetivos] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [recursos, setRecursos] = useState("");
+    const { usuarioDetalles } = useSesionUsuario();
     const [showAlert, setShowAlert] = useState(false);
 
     const handleTituloChange = (content) => {
@@ -36,6 +38,11 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
     const cleanEmptyParagraphs = (content) => {
         const cleanContent = content.replace(/<p><br><\/p>/g, "");
         return cleanContent;
+    };
+
+    const cleanHtmlTags = (htmlContent) => {
+        const doc = new DOMParser().parseFromString(htmlContent, "text/html");
+        return doc.body.textContent || "";
     };
 
     const isQuillContentAvailable = (content) => {
@@ -101,10 +108,35 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
                 }
             );
 
+            console.log("Respuesta del servidor al crear el tema:", response.data);
+
             if (response.data.en === 1) {
-                console.log("Se creó el tema correctamente");
-                cargarTemas();
-                handleClose();
+                const nuevoTemaId = response.data.idTema; // Obtén el ID del tema creado
+                const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el tema con el título: "${cleanHtmlTags(titulo)}"`;
+
+                console.log(mensaje);
+
+                // Llama al endpoint de historial para registrar el cambio
+                const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                axios
+                    .post("http://localhost:5000/historial/registrarCambio", {
+                        tipoEntidad: "tema",
+                        idTema: nuevoTemaId,
+                        detalles: mensaje,
+                        personaId: personaId,
+                    })
+                    .then((historialResponse) => {
+                        if (historialResponse.data.en === 1) {
+                            console.log("Cambio registrado en el historial");
+                            cargarTemas();
+                            handleClose();
+                        } else {
+                            console.log("No se pudo registrar el cambio en el historial");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al registrar el cambio en el historial:", error);
+                    });
             } else {
                 console.log("No se pudo crear el tema");
             }
@@ -112,6 +144,7 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
             console.error("Error al crear el tema:", error);
         }
     };
+
 
     return (
         <>

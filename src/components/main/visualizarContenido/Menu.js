@@ -1,39 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { ButtonGroup, Button, Container, Col, Row } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from "react";
+import { ButtonGroup, Container, Col, Row, DropdownButton, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import "../../../assets/styles/components/main/visualizarContenido/menu.css";
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
+import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 
 const Menu = () => {
-    const [temas, setTemas] = useState([]);
     const { temaSeleccionado, actualizarTemaSeleccionado } = useTemaSeleccionado();
+    const { subtemaSeleccionado, actualizarSubtemaSeleccionado } = useSubtemaSeleccionado();
+    const [temas, setTemas] = useState([]);
+    const [subtemas, setSubtemas] = useState(null);
+    const subtemaRef = useRef(null);
+    const menuRef = useRef(null);
 
     useEffect(() => {
         cargarTemas();
     }, []);
 
-    // const cargarTemas = () => {
-    //     const parametros = {
-    //         estado: 1,
-    //     };
-
-    //     axios
-    //         .get("http://localhost:5000/temas/listarTemas", {
-    //             parametros,
-    //         })
-    //         .then((response) => {
-    //             if (response.data.en === 1) {
-    //                 console.log(response.data);
-    //                 setTemas(response.data.temas);
-
-    //             } else {
-    //                 console.log("Hubo un problema al cargar los temas");
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error al obtener los temas:", error);
-    //         });
-    // };
+    useEffect(() => {
+        if (temaSeleccionado) {
+            cargarSubtemas(temaSeleccionado.id);
+        } else {
+            setSubtemas(null);
+            actualizarSubtemaSeleccionado(null);
+        }
+    }, [temaSeleccionado]);
 
     const cargarTemas = () => {
         const parametros = {
@@ -44,7 +35,6 @@ const Menu = () => {
             .post("http://localhost:5000/temas/listarTemas", parametros)
             .then((response) => {
                 if (response.data.en === 1) {
-                    console.log(response.data);
                     setTemas(response.data.temas);
                 } else {
                     console.log("Hubo un problema al cargar los temas");
@@ -55,6 +45,26 @@ const Menu = () => {
             });
     };
 
+    const cargarSubtemas = (idTema) => {
+        const parametros = {
+            mensaje: "subtemasActivos",
+            idTema: idTema,
+        };
+
+        axios
+            .post("http://localhost:5000/subtemas/listarSubtemas", parametros)
+            .then((response) => {
+                if (response.data.en === 1) {
+                    setSubtemas(response.data.subtemas);
+                } else {
+                    console.log("Hubo un problema al cargar los subtemas");
+                    setSubtemas([]);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al obtener los subtemas:", error);
+            });
+    };
 
     const cleanHtmlTags = (htmlContent) => {
         const doc = new DOMParser().parseFromString(htmlContent, "text/html");
@@ -62,12 +72,24 @@ const Menu = () => {
     };
 
     const handleTemaClick = (tema) => {
-        // Actualizar el tema seleccionado en el contexto
         actualizarTemaSeleccionado(tema);
+        // No actualizamos el contexto de subtemas aquí
+    };
+
+    const handleSubtemaClick = (subtema) => {
+        // Verificamos que haya un subtema antes de actualizar el contexto
+        if (subtema) {
+            actualizarSubtemaSeleccionado(subtema);
+
+            // Hacer scroll hacia el DropdownButton del subtema seleccionado
+            if (subtemaRef.current) {
+                subtemaRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
     };
 
     return (
-        <Container>
+        <Container ref={menuRef}>
             <Row>
                 <Col className="text-center">
                     <h1>Temas</h1>
@@ -77,13 +99,32 @@ const Menu = () => {
                 <Col className="buttonGroupContainer">
                     <ButtonGroup className="me-2" aria-label="First group" vertical>
                         {temas.map((tema) => (
-                            <Button
-                                variant="secondary"
+                            <DropdownButton
+                                title={cleanHtmlTags(tema.titulo)}
+                                id={`dropdown-${tema.id}`}
                                 key={tema.id}
                                 onClick={() => handleTemaClick(tema)}
                             >
-                                {cleanHtmlTags(tema.titulo)}
-                            </Button>
+                                {subtemas !== null ? (
+                                    subtemas.length > 0 ? (
+                                        subtemas.map((subtema) => (
+                                            <Dropdown.Item
+                                                key={subtema.id}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleSubtemaClick(subtema);
+                                                }}
+                                                // Añadir ref para el DropdownButton del subtema seleccionado
+                                                ref={subtema === subtemaSeleccionado ? subtemaRef : null}
+                                            >
+                                                {cleanHtmlTags(subtema.titulo)}
+                                            </Dropdown.Item>
+                                        ))
+                                    ) : (
+                                        <Dropdown.Item disabled>No existen subtemas</Dropdown.Item>
+                                    )
+                                ) : null}
+                            </DropdownButton>
                         ))}
                     </ButtonGroup>
                 </Col>
