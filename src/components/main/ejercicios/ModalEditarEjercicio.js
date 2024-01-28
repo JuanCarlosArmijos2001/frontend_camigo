@@ -328,7 +328,8 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
                 titulo: DOMPurify.sanitize(titulo),
                 instrucciones: DOMPurify.sanitize(instrucciones),
                 restricciones: DOMPurify.sanitize(restricciones),
-                solucion: DOMPurify.sanitize(solucion),
+                // solucion: DOMPurify.sanitize(solucion),
+                solucion: solucion,
             };
 
             const response = await axios.post(
@@ -348,15 +349,13 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
                 )}"`;
 
                 // Llama al endpoint de historial para registrar el cambio
-                const personaId = usuarioDetalles
-                    ? usuarioDetalles.detallesPersona.id
-                    : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "ejercicio",
                         idEjercicio: ejercicioParaEditar.id,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {

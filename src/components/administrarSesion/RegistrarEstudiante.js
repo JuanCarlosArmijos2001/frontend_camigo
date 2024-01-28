@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import CardRegistroExitoso from '../utilities/CardRegistroExitoso';
-import "../../assets/styles/components/administrarSesion/RegistrarUsuario.css";
+import "../../assets/styles/components/administrarSesion/RegistrarEstudiante.css";
 import { v4 as uuidv4 } from 'uuid';
 
-const RegistrarUsuario = () => {
+const RegistrarEstudiante = () => {
 
     const [usuario, setUsuario] = useState({
         nombres: '',
@@ -32,7 +32,6 @@ const RegistrarUsuario = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("External ID:")
         console.log(usuario.externalId);
         const emptyFields = Object.values(usuario).some((field) => field.trim() === "");
         if (emptyFields) {
@@ -138,21 +137,6 @@ const RegistrarUsuario = () => {
                             required
                         />
                     </Form.Group>
-
-                    <Form.Group controlId="tipoRol" className="campo-formulario">
-                        <Form.Label>Tipo de Rol</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="tipoRol"
-                            value={usuario.tipoRol}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="docente">Docente</option>
-                            <option value="estudiante">Estudiante</option>
-                        </Form.Control>
-                    </Form.Group>
-
                     <Button variant="success" type="submit" className="boton-registrarse">
                         Registrarse
                     </Button>
@@ -165,4 +149,4 @@ const RegistrarUsuario = () => {
     );
 };
 
-export default RegistrarUsuario;
+export default RegistrarEstudiante;

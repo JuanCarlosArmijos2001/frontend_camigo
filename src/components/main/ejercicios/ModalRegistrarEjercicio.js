@@ -341,7 +341,8 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
                 titulo: titulo, 
                 instrucciones: DOMPurify.sanitize(instrucciones),
                 restricciones: DOMPurify.sanitize(restricciones),
-                solucion: DOMPurify.sanitize(solucion),
+                // solucion: DOMPurify.sanitize(solucion),
+                solucion: solucion,
                 idSubtema: subtemaSeleccionado.id,
             };
 
@@ -363,13 +364,13 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
                     titulo
                 )}"`;
 
-                const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "ejercicio",
                         idEjercicio: nuevoEjercicioId,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {

@@ -200,7 +200,6 @@
 
 // export default GestionarSubtemas;
 //----------------------------------------------------------------------
-// GestionarSubtemas.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Form, Container, Row, Col, Modal, Table } from "react-bootstrap";
@@ -218,6 +217,7 @@ const GestionarSubtemas = () => {
   const { temaSeleccionado } = useTemaSeleccionado();
   const { subtemaSeleccionado, actualizarSubtemaSeleccionado } = useSubtemaSeleccionado();
   const [term, setTerm] = useState('');
+  const [existeSubtemas, setExisteSubtemas] = useState(false);
   const [historialCambios, setHistorialCambios] = useState([]);
   const [showHistorialModal, setShowHistorialModal] = useState(false);
   const { usuarioDetalles } = useSesionUsuario();
@@ -235,8 +235,10 @@ const GestionarSubtemas = () => {
       .then((response) => {
         if (response.data.en === 1) {
           setSubtemas(response.data.subtemas);
+          setExisteSubtemas(true);
         } else {
           console.log("Hubo un problema al cargar los subtemas");
+          setExisteSubtemas(false);
         }
       })
       .catch((error) => {
@@ -247,6 +249,7 @@ const GestionarSubtemas = () => {
   const activarDesactivarSubtema = () => {
     if (subtemaSeleccionado) {
       const nuevoEstado = subtemaSeleccionado.estado === 1 ? -1 : 1;
+
       axios
         .post("http://localhost:5000/subtemas/activarDesactivarSubtema", {
           id: subtemaSeleccionado.id,
@@ -254,19 +257,20 @@ const GestionarSubtemas = () => {
         })
         .then((response) => {
           if (response.data.en === 1) {
-            cargarSubtemas();
-            const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+            console.log("Estado del subtema cambiado con éxito");
+            const usuarioId = usuarioDetalles.id;
             const estadoMensaje = nuevoEstado === 1 ? "activo" : "inactivo";
             axios
               .post("http://localhost:5000/historial/registrarCambio", {
                 tipoEntidad: "subtema",
                 idSubtema: subtemaSeleccionado.id,
                 detalles: `${usuarioDetalles.detallesPersona.nombres} cambió el estado del subtema "${cleanHtmlTags(subtemaSeleccionado.titulo)}" a ${estadoMensaje}`,
-                personaId: personaId,
+                idUsuario: usuarioId,
               })
               .then((historialResponse) => {
                 if (historialResponse.data.en === 1) {
                   console.log("Cambio registrado en el historial");
+                  cargarSubtemas();
                 } else {
                   console.log("No se pudo registrar el cambio en el historial");
                 }
@@ -283,6 +287,7 @@ const GestionarSubtemas = () => {
         });
     }
   };
+
 
   const cleanHtmlTags = (htmlContent) => {
     const doc = new DOMParser().parseFromString(htmlContent, "text/html");
@@ -306,30 +311,30 @@ const GestionarSubtemas = () => {
     : subtemas;
 
 
-    const cargarHistorialCambios = () => {
-      if (subtemaSeleccionado) {
-          axios
-              .post("http://localhost:5000/historial/listarCambios", {
-                  idEntidad: subtemaSeleccionado.id,
-                  tipoEntidad: "subtema",
-              })
-              .then((response) => {
-                  if (response.data.en === 1) {
-                      setHistorialCambios(response.data.cambios);
-                      setShowHistorialModal(true);
-                  } else {
-                      console.log("No se encontraron cambios para este subtema");
-                  }
-              })
-              .catch((error) => {
-                  console.error("Error al obtener el historial de cambios:", error);
-              });
-      }
+  const cargarHistorialCambios = () => {
+    if (subtemaSeleccionado) {
+      axios
+        .post("http://localhost:5000/historial/listarCambios", {
+          idEntidad: subtemaSeleccionado.id,
+          tipoEntidad: "subtema",
+        })
+        .then((response) => {
+          if (response.data.en === 1) {
+            setHistorialCambios(response.data.cambios);
+            setShowHistorialModal(true);
+          } else {
+            console.log("No se encontraron cambios para este subtema");
+          }
+        })
+        .catch((error) => {
+          console.error("Error al obtener el historial de cambios:", error);
+        });
+    }
   };
-  
+
   return (
     <Container>
-      {subtemas.length > 0 ? (
+      {existeSubtemas ? (
         <Row>
           <Col xs={12}>
             <div className="contenedorPrincipal">

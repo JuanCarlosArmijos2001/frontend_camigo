@@ -3,27 +3,27 @@ import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import Editor from "@monaco-editor/react";
 import axios from 'axios';
 import ComentariosForm from "../comentarios/ComentariosForm";
+import EditorCompilador from "./EditorCompilador";
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoContext";
-
-const cleanHtmlTags = (htmlContent) => {
-    const doc = new DOMParser().parseFromString(htmlContent, "text/html");
-    return doc.body.textContent || "";
-};
+import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 
 const MostrarContenido = () => {
     const { temaSeleccionado } = useTemaSeleccionado();
     const { subtemaSeleccionado } = useSubtemaSeleccionado();
     const { ejercicioSeleccionado, actualizarEjercicioSeleccionado } = useEjercicioSeleccionado();
     const { preguntaSeleccionado, actualizarPreguntaSeleccionado } = usePreguntaSeleccionado();
+    const { usuarioDetalles } = useSesionUsuario();
     const subtemaSectionRef = useRef(null);
     const [ejercicios, setEjercicios] = useState([]);
     const [existeEjercicios, setExisteEjercicios] = useState(false);
     const [mostrarSolucion, setMostrarSolucion] = useState(false);
     const [preguntas, setPreguntas] = useState([]);
     const [existePreguntas, setExistePreguntas] = useState(false);
+    const [intentoFallido, setIntentoFallido] = useState(false);
+
 
     useEffect(() => {
         if (subtemaSeleccionado) {
@@ -87,20 +87,45 @@ const MostrarContenido = () => {
     const [showExplanation, setShowExplanation] = useState(false);
     const [isCorrect, setIsCorrect] = useState(null);
 
-    const handleOptionChange = (option) => {
+    const handleOptionChange = async (option) => {
         console.log("Opción seleccionada:", option);
         setSelectedOption(option);
         setShowExplanation(true);
-        setIsCorrect(option === preguntaSeleccionado.respuesta_correcta);
-    };
+        
+        const isOptionCorrect = option === preguntaSeleccionado.respuesta_correcta;
+        setIsCorrect(isOptionCorrect);
+        console.log("Respuesta correcta: ", preguntaSeleccionado.respuesta_correcta);
 
-    const handleSubmit = () => {
-        if (selectedOption !== null) {
-            console.log("La opción seleccionada es correcta:", isCorrect);
-
-            // Puedes realizar acciones adicionales según si la opción es correcta o incorrecta
+        if (isOptionCorrect) {
+            console.log("Pregunta completada entro a la funcion")
+            try {
+                const response = await axios.post("http://localhost:5000/preguntas/completarPregunta", {
+                    idPregunta: preguntaSeleccionado.id,
+                    idEjercicio: ejercicioSeleccionado.id,
+                    idSubtema: subtemaSeleccionado.id,
+                    idTema: temaSeleccionado.id,
+                    idUsuario: usuarioDetalles.id
+                });
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error al completar la pregunta:", error);
+            }
+        } else {
+            setIntentoFallido(true);
         }
     };
+
+    const volverAIntentarlo = () => {
+        setIntentoFallido(false);
+        setShowExplanation(false);
+        setSelectedOption(null);
+    };
+
+    const cleanHtmlTags = (htmlContent) => {
+        const doc = new DOMParser().parseFromString(htmlContent, "text/html");
+        return doc.body.textContent || "";
+    };
+
 
     return (
         <Container>
@@ -175,7 +200,7 @@ const MostrarContenido = () => {
                                     <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.restricciones }} />
                                     <br />
                                     <p>Realiza tu solución</p>
-                                    <Editor height="200px" defaultLanguage="c" readOnly={!mostrarSolucion} />
+                                    <EditorCompilador />
                                     <br />
                                     <Button onClick={() => setMostrarSolucion(!mostrarSolucion)}>
                                         {mostrarSolucion ? "Ocultar solución" : "Mostrar solución"}
@@ -217,42 +242,50 @@ const MostrarContenido = () => {
             )}
             {preguntaSeleccionado && (
                 <>
-                                <Row>
-                    <Col>
-                        <h2>Contenido de la pregunta:</h2>
-                        <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.enunciado }} />
-                        <Form>
-                            {['a', 'b', 'c', 'd'].map((option) => (
-                                <Form.Check
-                                    key={option}
-                                    type="radio"
-                                    id={`option-${option}`}
-                                    label={cleanHtmlTags(preguntaSeleccionado[`opcion_${option.toLowerCase()}`])}
-                                    onChange={() => handleOptionChange(option)}
-                                    checked={selectedOption === option}
-                                    disabled={showExplanation || selectedOption !== null}
-                                />
-                            ))}
-                        </Form>
-                        {showExplanation && (
-                            <>
-                                {isCorrect ? (
-                                    <p>Excelente, respuesta la opción seleccionada es la correcta</p>
-                                ) : (
-                                    <p>Oh, tu respuesta es incorrecta de la opción , la opción correcta es la opción {preguntaSeleccionado.respuesta_correcta}.</p>
-                                )}
-                                <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.justificacion }} />
-                            </>
-                        )}
-                        <br />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <ComentariosForm />
-                    </Col>
-                </Row>
-                <br/>
+                    <Row>
+                        <Col>
+                            <h2>Contenido de la pregunta:</h2>
+                            <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.enunciado }} />
+                            <Form>
+                                {['a', 'b', 'c', 'd'].map((option) => (
+                                    <Form.Check
+                                        key={option}
+                                        type="radio"
+                                        id={`option-${option}`}
+                                        label={cleanHtmlTags(preguntaSeleccionado[`opcion_${option.toLowerCase()}`])}
+                                        onChange={() => handleOptionChange(option)}
+                                        checked={selectedOption === option}
+                                        disabled={showExplanation || selectedOption !== null}
+                                    />
+                                ))}
+                            </Form>
+                            {showExplanation && (
+                                <>
+                                    {isCorrect ? (
+                                        <>
+                                            <p>Excelente, respuesta la opción seleccionada es la correcta</p>
+                                            <h2>Justificación</h2>
+                                            <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.justificacion }} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p>Oh, tu respuesta es incorrecta de la opción, la opción correcta es la opción {preguntaSeleccionado.respuesta_correcta}.</p>
+                                            <Button onClick={volverAIntentarlo}>
+                                                Volver a intentarlo
+                                            </Button>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                            <br />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <ComentariosForm />
+                        </Col>
+                    </Row>
+                    <br />
                 </>
 
             )}

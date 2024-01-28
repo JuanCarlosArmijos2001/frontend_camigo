@@ -348,7 +348,8 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                 titulo: DOMPurify.sanitize(titulo),
                 objetivos: DOMPurify.sanitize(objetivos),
                 descripcion: DOMPurify.sanitize(descripcion),
-                ejemploCodigo: DOMPurify.sanitize(ejemploCodigo),
+                // ejemploCodigo: DOMPurify.sanitize(ejemploCodigo),
+                ejemploCodigo: ejemploCodigo,
                 recursos: DOMPurify.sanitize(recursos),
             };
 
@@ -369,15 +370,13 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                 )}"`;
 
                 // Llama al endpoint de historial para registrar el cambio
-                const personaId = usuarioDetalles
-                    ? usuarioDetalles.detallesPersona.id
-                    : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "subtema",
                         idSubtema: subtemaParaEditar.id,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {

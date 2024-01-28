@@ -257,14 +257,14 @@ const GestionarEjercicios = () => {
                         cargarEjercicios();
                         console.log("id ejercicio", ejercicioSeleccionado.id)
                         // Registro del cambio en el historial
-                        const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                        const usuarioId = usuarioDetalles.id;               
                         const estadoMensaje = nuevoEstado === 1 ? "activo" : "inactivo";
                         axios
                             .post("http://localhost:5000/historial/registrarCambio", {
                                 tipoEntidad: "ejercicio",
                                 idEjercicio: ejercicioSeleccionado.id,
                                 detalles: `${usuarioDetalles.detallesPersona.nombres} cambió el estado del ejercicio "${cleanHtmlTags(ejercicioSeleccionado.titulo)}" a ${estadoMensaje}`,
-                                personaId: personaId,
+                                idUsuario: usuarioId,
                             })
                             .then((historialResponse) => {
                                 if (historialResponse.data.en === 1) {

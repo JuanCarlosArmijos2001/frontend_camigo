@@ -444,15 +444,13 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
                 )}"`;
 
                 // Llama al endpoint de historial para registrar el cambio
-                const personaId = usuarioDetalles
-                    ? usuarioDetalles.detallesPersona.id
-                    : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "pregunta",
                         idPregunta: preguntaParaEditar.id,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {

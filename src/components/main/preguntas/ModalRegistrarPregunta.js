@@ -450,13 +450,13 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
                     enunciado
                 )}"`;
 
-                const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "pregunta",
                         idPregunta: nuevaPreguntaId,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal } from 'react-bootstrap';
 import IniciarSesion from './IniciarSesion';
-import RegistrarUsuario from './RegistrarUsuario';
+import RegistrarUsuario from './RegistrarEstudiante';
 import '../../assets/styles/components/administrarSesion/ModalAdministrarSesion.css';
 
 

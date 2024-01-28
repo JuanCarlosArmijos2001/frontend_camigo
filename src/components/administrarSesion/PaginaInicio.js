@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import '../../assets/styles/components/administrarSesion/PaginaInicio.css';
 import IniciarSesion from './IniciarSesion';
-import RegistrarUsuario from './RegistrarUsuario';
+import RegistrarEstudiante from './RegistrarEstudiante';
 import { Button, Modal, Card, CardGroup, Container, Row, Col } from 'react-bootstrap';
 
 export default function PaginaInicio() {
     const [showIniciarSesion, setShowIniciarSesion] = useState(false);
-    const [showRegistrarUsuario, setShowRegistrarUsuario] = useState(false);
+    const [showRegistrarEstudiante, setShowRegistrarEstudiante] = useState(false);
 
     const handleClose = () => {
         setShowIniciarSesion(false);
-        setShowRegistrarUsuario(false);
+        setShowRegistrarEstudiante(false);
     };
 
     const handleIniciarSesionClose = () => {
@@ -30,7 +30,7 @@ export default function PaginaInicio() {
                     <Button variant="success" onClick={() => setShowIniciarSesion(true)} id="btnIniciarSesión">
                         Iniciar Sesión
                     </Button>
-                    <Button variant="primary" onClick={() => setShowRegistrarUsuario(true)} id="btnRegistrar">
+                    <Button variant="primary" onClick={() => setShowRegistrarEstudiante(true)} id="btnRegistrar">
                         Registrarse
                     </Button>
                 </Col>
@@ -84,12 +84,12 @@ export default function PaginaInicio() {
                     <IniciarSesion onClose={handleIniciarSesionClose} />
                 </Modal.Body>
             </Modal>
-            <Modal show={showRegistrarUsuario} onHide={handleClose}>
+            <Modal show={showRegistrarEstudiante} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Registrarse</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <RegistrarUsuario />
+                    <RegistrarEstudiante />
                 </Modal.Body>
             </Modal>
         </Container>

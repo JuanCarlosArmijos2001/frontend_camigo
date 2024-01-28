@@ -46,24 +46,24 @@ const GestionarTemas = () => {
 
   const cargarHistorialCambios = () => {
     if (temaSeleccionado) {
-        axios
-            .post("http://localhost:5000/historial/listarCambios", {
-                idEntidad: temaSeleccionado.id,
-                tipoEntidad: "tema",
-            })
-            .then((response) => {
-                if (response.data.en === 1) {
-                    setHistorialCambios(response.data.cambios);
-                    setShowHistorialModal(true);
-                } else {
-                    console.log("No se encontraron cambios para este tema");
-                }
-            })
-            .catch((error) => {
-                console.error("Error al obtener el historial de cambios:", error);
-            });
+      axios
+        .post("http://localhost:5000/historial/listarCambios", {
+          idEntidad: temaSeleccionado.id,
+          tipoEntidad: "tema",
+        })
+        .then((response) => {
+          if (response.data.en === 1) {
+            setHistorialCambios(response.data.cambios);
+            setShowHistorialModal(true);
+          } else {
+            console.log("No se encontraron cambios para este tema");
+          }
+        })
+        .catch((error) => {
+          console.error("Error al obtener el historial de cambios:", error);
+        });
     }
-};
+  };
 
   const activarDesactivarTema = () => {
     if (temaSeleccionado) {
@@ -77,16 +77,15 @@ const GestionarTemas = () => {
         .then((response) => {
           if (response.data.en === 1) {
             console.log("Estado del tema cambiado con éxito");
-            const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
-
+            const usuarioId = usuarioDetalles.id;
+            console.log("usuarioId en tema", usuarioId)
             const estadoMensaje = nuevoEstado === 1 ? "activo" : "inactivo";
-
             axios
               .post("http://localhost:5000/historial/registrarCambio", {
                 tipoEntidad: "tema",
                 idTema: temaSeleccionado.id,
                 detalles: `${usuarioDetalles.detallesPersona.nombres} cambió el estado del tema "${cleanHtmlTags(temaSeleccionado.titulo)}" a ${estadoMensaje}`,
-                personaId: personaId,
+                idUsuario: usuarioId,
               })
               .then((historialResponse) => {
                 if (historialResponse.data.en === 1) {
@@ -108,6 +107,8 @@ const GestionarTemas = () => {
         });
     }
   };
+
+
 
   const getButtonText = () => {
     if (temaSeleccionado === null) {

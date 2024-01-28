@@ -3,6 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useSesionUsuario } from "../../context/SesionUsuarioContext";
 import VisualizarContenido from "./visualizarContenido/VisualizarContenido";
 import PaginaPrincipalDocente from "./paginaPrincipalDocente/PaginaPrincipalDocente";
+import PaginaPrincipalAdmin from "./paginaPrincipalAdmin.js/PaginaPrincipalAdmin";
 import "../../assets/styles/components/main/main.css";
 
 export default function Main() {
@@ -20,6 +21,7 @@ export default function Main() {
             <>
               {usuarioDetalles.detallesRol.tipo === "docente" && <PaginaPrincipalDocente />}
               {usuarioDetalles.detallesRol.tipo === "estudiante" && <VisualizarContenido />}
+              {usuarioDetalles.detallesRol.tipo === "administrador" && <PaginaPrincipalAdmin />}
             </>
           )}
         </Col>

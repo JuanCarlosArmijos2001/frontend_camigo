@@ -369,7 +369,8 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
                 titulo: titulo, // Limpia las etiquetas HTML del título
                 objetivos: DOMPurify.sanitize(objetivos),
                 descripcion: DOMPurify.sanitize(descripcion),
-                ejemploCodigo: DOMPurify.sanitize(ejemploCodigo),
+                // ejemploCodigo: DOMPurify.sanitize(ejemploCodigo),
+                ejemploCodigo: ejemploCodigo,
                 recursos: DOMPurify.sanitize(recursos),
                 idTema: temaSeleccionado.id,
             };
@@ -390,13 +391,13 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
                 const nuevoSubtemaId = response.data.idSubtema;
                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el subtema con el título: "${cleanHtmlTags(titulo)}"`;
 
-                const personaId = usuarioDetalles ? usuarioDetalles.detallesPersona.id : null;
+                const usuarioId = usuarioDetalles.id;
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "subtema",
                         idSubtema: nuevoSubtemaId,
                         detalles: mensaje,
-                        personaId: personaId,
+                        idUsuario: usuarioId,
                     })
                     .then((historialResponse) => {
                         if (historialResponse.data.en === 1) {
