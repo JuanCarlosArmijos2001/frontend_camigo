@@ -14,7 +14,7 @@ export const TemaSeleccionadoContextProvider = ({ children }) => {
     }, [temaSeleccionado]);
 
     return (
-        <TemaSeleccionadoContext.Provider value={{ temaSeleccionado, actualizarTemaSeleccionado }}>
+        <TemaSeleccionadoContext.Provider value={{ temaSeleccionado, setTemaSeleccionado, actualizarTemaSeleccionado }}>
             {children}
         </TemaSeleccionadoContext.Provider>
     )

@@ -14,7 +14,7 @@ export const PreguntaSeleccionadoContextProvider = ({ children }) => {
     }, [preguntaSeleccionado]);
 
     return (
-        <PreguntaSeleccionadoContext.Provider value={{ preguntaSeleccionado, actualizarPreguntaSeleccionado }}>
+        <PreguntaSeleccionadoContext.Provider value={{ preguntaSeleccionado, setPreguntaSeleccionado, actualizarPreguntaSeleccionado }}>
             {children}
         </PreguntaSeleccionadoContext.Provider>
     )

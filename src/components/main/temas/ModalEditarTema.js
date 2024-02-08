@@ -6,6 +6,7 @@ import axios from "axios";
 import DOMPurify from "dompurify";
 import "react-quill/dist/quill.snow.css";
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
+import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 
 export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
     const [show, setShow] = useState(false);
@@ -15,9 +16,11 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
     const [objetivos, setObjetivos] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [recursos, setRecursos] = useState("");
+    const [estado, setEstado] = useState(0);
     const [showAlert, setShowAlert] = useState(false);
     const formRef = useRef(null);
     const { usuarioDetalles } = useSesionUsuario();
+    const { setTemaSeleccionado } = useTemaSeleccionado();
 
 
     const handleTituloChange = (content) => {
@@ -39,6 +42,7 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
         setObjetivos(temaParaEditar.objetivos);
         setDescripcion(temaParaEditar.descripcion);
         setRecursos(temaParaEditar.recursos);
+        setEstado(temaParaEditar.estado);
     };
 
     const toolbarOptions = [
@@ -82,11 +86,12 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
     const editarTema = async () => {
         try {
             const datosFormulario = {
-                id: temaParaEditar.id,
+                id: temaParaEditar.idTema,
                 titulo: DOMPurify.sanitize(titulo),
                 objetivos: DOMPurify.sanitize(objetivos),
                 descripcion: DOMPurify.sanitize(descripcion),
                 recursos: DOMPurify.sanitize(recursos),
+                estado: estado,
             };
 
             const response = await axios.post(
@@ -100,9 +105,18 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
                 }
             );
 
+            const { temaEditadoBackend } = response.data;
             if (response.data.en === 1) {
-                const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el tema con el título: "${cleanHtmlTags(titulo)}"`;
+                let temaActualizado = { ...temaParaEditar };
+                temaActualizado.idTema = temaEditadoBackend.id;
+                temaActualizado.titulo = temaEditadoBackend.titulo;
+                temaActualizado.objetivos = temaEditadoBackend.objetivos;
+                temaActualizado.descripcion = temaEditadoBackend.descripcion;
+                temaActualizado.recursos = temaEditadoBackend.recursos;
+                temaActualizado.estado = temaEditadoBackend.estado;
+                setTemaSeleccionado(temaActualizado);
 
+                const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el tema con el título: "${cleanHtmlTags(titulo)}"`;
                 console.log(mensaje);
 
                 // Llama al endpoint de historial para registrar el cambio
@@ -110,7 +124,7 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
                 axios
                     .post("http://localhost:5000/historial/registrarCambio", {
                         tipoEntidad: "tema",
-                        idTema: temaParaEditar.id,
+                        idTema: temaParaEditar.idTema,
                         detalles: mensaje,
                         idUsuario: usuarioId,
                     })
@@ -143,7 +157,7 @@ export default function ModalEditarTema({ cargarTemas, temaParaEditar }) {
             >
                 Editar
             </Button>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="xl" style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edita el tema seleccionado</Modal.Title>
                 </Modal.Header>

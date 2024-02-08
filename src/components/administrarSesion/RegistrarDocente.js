@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
-import CardRegistroExitoso from '../utilities/CardRegistroExitoso';
+import CardRegistroExitosoDocente from '../utilities/CardRegistroExitosoDocente';
 import "../../assets/styles/components/administrarSesion/RegistrarEstudiante.css";
 import { v4 as uuidv4 } from 'uuid';
 
-const RegistrarDocente = () => {
+const RegistrarDocente = ({obtenerDocentes}) => {
 
     const [usuario, setUsuario] = useState({
         nombres: '',
@@ -72,6 +72,7 @@ const RegistrarDocente = () => {
 
                 console.log('Registro exitoso:', m);
                 setRegistroExitoso(true);
+                obtenerDocentes();
 
             } else {
                 console.error('Error en el registro:', m);
@@ -142,7 +143,7 @@ const RegistrarDocente = () => {
                     </Button>
                 </Form>
             ) : (
-                <CardRegistroExitoso />
+                <CardRegistroExitosoDocente />
             )}
         </div>
 

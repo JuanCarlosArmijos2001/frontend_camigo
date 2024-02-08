@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Container, Button, Row, Col, Dropdown, ButtonGroup } from "react-bootstrap";
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import SettingsIcon from '@mui/icons-material/Settings';  // Importa el icono de configuración
 import { useSesionUsuario } from "../../context/SesionUsuarioContext";
-import ModalAdministrarSesion from "../administrarSesion/ModalAdministrarSesion";
 import ModalEditarUsuario from "../administrarSesion/ModalEditarUsuario";
-import "../../assets/styles/components/header/NaveBar.css";
 
-const NaveBar = () => {
+export default function NaveBar() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
   const { usuarioDetalles, cerrarSesion } = useSesionUsuario();
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
 
@@ -13,8 +16,17 @@ const NaveBar = () => {
     console.log("Sesión en NaveBar: ", usuarioDetalles);
   }, [usuarioDetalles]);
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const abrirModalEditar = () => {
     setMostrarModalEditar(true);
+    handleClose();  // Cerrar el menú cuando se abre el modal
   };
 
   const cerrarModalEditar = () => {
@@ -22,39 +34,30 @@ const NaveBar = () => {
   };
 
   return (
-    <Container className="contenedorPrincipalNB" fluid>
-      <Row className="filaNavBar">
-        <Col xs={4}>
-          <h1 className="tituloNavBar">C'amigo</h1>
-        </Col>
-        <Col xs={4}>
-          {usuarioDetalles && usuarioDetalles.detallesPersona ? (
-            <h1 className="nombreUsuario">¡Bienvenido de nuevo, {usuarioDetalles.detallesPersona.nombres}!</h1>
-          ) : (
-            <ModalAdministrarSesion />
-          )}
-        </Col>
-        <Col xs={4} className="text-center">
-          {usuarioDetalles && usuarioDetalles.detallesPersona ? (
-            <ButtonGroup>
-              <Dropdown as={ButtonGroup}>
-                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                  Opciones
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={abrirModalEditar}>Editar Perfil</Dropdown.Item>
-                  <Dropdown.Item onClick={cerrarSesion}>Cerrar Sesión</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </ButtonGroup>
-          ) : null}
-        </Col>
-      </Row>
-
+    <div>
+      <IconButton
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        <SettingsIcon style={{ color: 'white' }} />  {/* Cambia el color del icono a gris */}
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={abrirModalEditar}>Perfil</MenuItem>
+        <MenuItem onClick={cerrarSesion}>Cerrar sesión</MenuItem>
+      </Menu>
       <ModalEditarUsuario show={mostrarModalEditar} onHide={cerrarModalEditar} />
-    </Container>
+    </div>
   );
-};
+}
 
-export default NaveBar;

@@ -343,7 +343,7 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
                 restricciones: DOMPurify.sanitize(restricciones),
                 // solucion: DOMPurify.sanitize(solucion),
                 solucion: solucion,
-                idSubtema: subtemaSeleccionado.id,
+                idSubtema: subtemaSeleccionado.idSubtema,
             };
 
             const response = await axios.post(
@@ -397,7 +397,7 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
             <Button variant="success" onClick={handleShow}>
                 Crear
             </Button>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="xl" style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea un nuevo ejercicio</Modal.Title>
                 </Modal.Header>

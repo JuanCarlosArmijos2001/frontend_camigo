@@ -14,7 +14,7 @@ export const EjercicioSeleccionadoContextProvider = ({ children }) => {
     }, [ejercicioSeleccionado]);
 
     return (
-        <EjercicioSeleccionadoContext.Provider value={{ ejercicioSeleccionado, actualizarEjercicioSeleccionado }}>
+        <EjercicioSeleccionadoContext.Provider value={{ ejercicioSeleccionado, setEjercicioSeleccionado, actualizarEjercicioSeleccionado }}>
             {children}
         </EjercicioSeleccionadoContext.Provider>
     )

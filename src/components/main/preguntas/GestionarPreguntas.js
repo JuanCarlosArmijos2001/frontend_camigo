@@ -227,7 +227,8 @@ const GestionarPreguntas = () => {
     const cargarPreguntas = () => {
         axios
             .post("http://localhost:5000/preguntas/listarPreguntas", {
-                idEjercicio: ejercicioSeleccionado.id,
+                idEjercicio: ejercicioSeleccionado.idEjercicio,
+                idUsuario: usuarioDetalles.id,
                 mensaje: "preguntas",
             })
             .then((response) => {
@@ -249,7 +250,7 @@ const GestionarPreguntas = () => {
             const nuevoEstado = preguntaSeleccionado.estado === 1 ? -1 : 1;
             axios
                 .post("http://localhost:5000/preguntas/activarDesactivarPregunta", {
-                    id: preguntaSeleccionado.id,
+                    id: preguntaSeleccionado.idPregunta,
                     estado: nuevoEstado,
                 })
                 .then((response) => {
@@ -261,7 +262,7 @@ const GestionarPreguntas = () => {
                         axios
                             .post("http://localhost:5000/historial/registrarCambio", {
                                 tipoEntidad: "pregunta",
-                                idPregunta: preguntaSeleccionado.id,
+                                idPregunta: preguntaSeleccionado.idPregunta,
                                 detalles: `${usuarioDetalles.detallesPersona.nombres} cambió el estado de la pregunta "${cleanHtmlTags(preguntaSeleccionado.enunciado)}" a ${estadoMensaje}`,
                                 idUsuario: usuarioId,
                             })
@@ -310,7 +311,7 @@ const GestionarPreguntas = () => {
         if (preguntaSeleccionado) {
             axios
                 .post("http://localhost:5000/historial/listarCambios", {
-                    idEntidad: preguntaSeleccionado.id,
+                    idEntidad: preguntaSeleccionado.idPregunta,
                     tipoEntidad: "pregunta",
                 })
                 .then((response) => {
@@ -336,7 +337,7 @@ const GestionarPreguntas = () => {
                             <div className="informacionTema">
                                 <h1>Preguntas de control</h1>
                                 <p>Las preguntas con fondo color rojo están desactivadas</p>
-                                <p>Es necesario seleccionar una pregunta de control para editar o para activar/desactivar.</p>
+                                <p>Es necesario seleccionar una pregunta para editar o para cambiar su estado de activo a inactivo.</p>
                             </div>
                         </div>
                     </Col>
@@ -365,7 +366,7 @@ const GestionarPreguntas = () => {
                                                 onClick={() => actualizarPreguntaSeleccionado(pregunta)}
                                                 className={`
                                                   ${pregunta.estado === -1 ? "redRow" : ""}
-                                                  ${preguntaSeleccionado && preguntaSeleccionado.id === pregunta.id
+                                                  ${preguntaSeleccionado && preguntaSeleccionado.idPregunta === pregunta.idPregunta
                                                         ? "selectedRow"
                                                         : ""}
                                                 `}
@@ -383,7 +384,7 @@ const GestionarPreguntas = () => {
                         </div>
                     </Col>
                     <Col xs={12}>
-                        <div className="botonesDerecha">
+                        <div className="botonesDerecha d-flex justify-content-center align-items-center">
                             <ModalRegistrarPregunta cargarPreguntas={cargarPreguntas} preguntas={preguntas} />
                             <ModalEditarPregunta
                                 cargarPreguntas={cargarPreguntas}
@@ -441,7 +442,7 @@ const GestionarPreguntas = () => {
                 </Row>
             )}
             {/* Historial Modal */}
-            <Modal show={showHistorialModal} onHide={() => setShowHistorialModal(false)}>
+            <Modal show={showHistorialModal} onHide={() => setShowHistorialModal(false)} style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Historial de Cambios</Modal.Title>
                 </Modal.Header>

@@ -366,13 +366,12 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
     const crearSubtema = async () => {
         try {
             const datosFormulario = {
-                titulo: titulo, // Limpia las etiquetas HTML del título
+                titulo: titulo,
                 objetivos: DOMPurify.sanitize(objetivos),
                 descripcion: DOMPurify.sanitize(descripcion),
-                // ejemploCodigo: DOMPurify.sanitize(ejemploCodigo),
                 ejemploCodigo: ejemploCodigo,
                 recursos: DOMPurify.sanitize(recursos),
-                idTema: temaSeleccionado.id,
+                idTema: temaSeleccionado.idTema,
             };
 
             const response = await axios.post(
@@ -424,7 +423,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
             <Button variant="success" onClick={handleShow}>
                 Crear
             </Button>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="xl" style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea un nuevo subtema</Modal.Title>
                 </Modal.Header>

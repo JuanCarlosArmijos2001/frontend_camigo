@@ -88,32 +88,6 @@ export const SesionUsuarioContextProvider = ({ children }) => {
         }
     };
 
-    // const obtenerDetallesUsuario = async (userId) => {
-    //     try {
-    //         const response = await axios.post(
-    //             'http://localhost:5000/sesionUsuario/detalleSesion',
-    //             { userId },
-    //             {
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     version: '1.0.0',
-    //                 },
-    //             }
-    //         );
-
-    //         const { en, m, detallesPersona, detallesCuenta, detallesRol } = response.data;
-
-    //         if (en === 1) {
-    //             setUsuarioDetalles({detallesPersona, detallesCuenta, detallesRol });
-    //             console.log('Detalles del usuario obtenidos correctamente:', detallesPersona, detallesCuenta, detallesRol);
-    //         } else {
-    //             console.error('Error al obtener detalles del usuario:', m);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error en la petición para obtener detalles del usuario:', error);
-    //     }
-    // };
-
     const obtenerDetallesUsuario = async (userId) => {
         try {
             const response = await axios.post(
@@ -127,11 +101,11 @@ export const SesionUsuarioContextProvider = ({ children }) => {
                 }
             );
 
-            const { en, m, userId: id, detallesPersona, detallesCuenta, detallesRol } = response.data;
+            const { en, m, userId: id, progreso, detallesPersona, detallesCuenta, detallesRol } = response.data;
 
             if (en === 1) {
-                setUsuarioDetalles({ id, detallesPersona, detallesCuenta, detallesRol });
-                console.log('Detalles del usuario obtenidos correctamente:', id, detallesPersona, detallesCuenta, detallesRol);
+                setUsuarioDetalles({ id, progreso, detallesPersona, detallesCuenta, detallesRol });
+                console.log('Detalles del usuario obtenidos correctamente:', id, progreso, detallesPersona, detallesCuenta, detallesRol);
             } else {
                 console.error('Error al obtener detalles del usuario:', m);
             }
@@ -140,9 +114,10 @@ export const SesionUsuarioContextProvider = ({ children }) => {
         }
     };
 
+
     return (
         <SesionUsuarioContext.Provider
-            value={{ token, usuarioDetalles, iniciarSesion, cerrarSesion }}
+            value={{ token, usuarioDetalles, setUsuarioDetalles, iniciarSesion, cerrarSesion }}
         >
             {children}
         </SesionUsuarioContext.Provider>

@@ -14,7 +14,7 @@ export const SubtemaSeleccionadoContextProvider = ({ children }) => {
     }, [subtemaSeleccionado]);
 
     return (
-        <SubtemaSeleccionadoContext.Provider value={{ subtemaSeleccionado, actualizarSubtemaSeleccionado }}>
+        <SubtemaSeleccionadoContext.Provider value={{ subtemaSeleccionado, setSubtemaSeleccionado, actualizarSubtemaSeleccionado }}>
             {children}
         </SubtemaSeleccionadoContext.Provider>
     )

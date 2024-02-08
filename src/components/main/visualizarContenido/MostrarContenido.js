@@ -9,6 +9,7 @@ import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoCont
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoContext";
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const MostrarContenido = () => {
     const { temaSeleccionado } = useTemaSeleccionado();
@@ -27,20 +28,21 @@ const MostrarContenido = () => {
 
     useEffect(() => {
         if (subtemaSeleccionado) {
-            cargarEjercicios(subtemaSeleccionado.id);
+            cargarEjercicios();
         }
     }, [subtemaSeleccionado]);
 
     useEffect(() => {
         if (ejercicioSeleccionado) {
-            cargarPreguntas(ejercicioSeleccionado.id);
+            cargarPreguntas();
         }
     }, [ejercicioSeleccionado]);
 
-    const cargarEjercicios = (idSubtema) => {
+    const cargarEjercicios = () => {
         axios
             .post("http://localhost:5000/ejercicios/listarEjercicios", {
-                idSubtema,
+                idSubtema: subtemaSeleccionado.idSubtema,
+                idUsuario: usuarioDetalles.id,
                 mensaje: "ejerciciosActivos",
             })
             .then((response) => {
@@ -57,10 +59,11 @@ const MostrarContenido = () => {
             });
     };
 
-    const cargarPreguntas = (idEjercicio) => {
+    const cargarPreguntas = () => {
         axios
             .post("http://localhost:5000/preguntas/listarPreguntas", {
-                idEjercicio,
+                idEjercicio: ejercicioSeleccionado.idEjercicio,
+                idUsuario: usuarioDetalles.id,
                 mensaje: "preguntasActivas",
             })
             .then((response) => {
@@ -91,7 +94,7 @@ const MostrarContenido = () => {
         console.log("Opción seleccionada:", option);
         setSelectedOption(option);
         setShowExplanation(true);
-        
+
         const isOptionCorrect = option === preguntaSeleccionado.respuesta_correcta;
         setIsCorrect(isOptionCorrect);
         console.log("Respuesta correcta: ", preguntaSeleccionado.respuesta_correcta);
@@ -100,11 +103,11 @@ const MostrarContenido = () => {
             console.log("Pregunta completada entro a la funcion")
             try {
                 const response = await axios.post("http://localhost:5000/preguntas/completarPregunta", {
-                    idPregunta: preguntaSeleccionado.id,
-                    idEjercicio: ejercicioSeleccionado.id,
-                    idSubtema: subtemaSeleccionado.id,
-                    idTema: temaSeleccionado.id,
-                    idUsuario: usuarioDetalles.id
+                    idPregunta: preguntaSeleccionado.idPregunta,
+                    idEjercicio: ejercicioSeleccionado.idEjercicio,
+                    idSubtema: subtemaSeleccionado.idSubtema,
+                    idTema: temaSeleccionado.idTema,
+                    idUsuario: usuarioDetalles.id,
                 });
                 console.log(response.data);
             } catch (error) {
@@ -128,168 +131,185 @@ const MostrarContenido = () => {
 
 
     return (
-        <Container>
-            <Row>
-                <Col>
-                    {temaSeleccionado && (
-                        <>
-                            <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.titulo }} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.objetivos }} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.descripcion }} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.recursos }} />
-                            <br />
-                        </>
-                    )}
-                </Col>
-            </Row>
-            {subtemaSeleccionado && (
-                <Row ref={subtemaSectionRef}>
+        <div className="content-wrapper">
+            <Container>
+                <Row>
                     <Col>
-                        <h2>Subtema:</h2>
-                        <div>
-                            <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.titulo }} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.objetivos }} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.descripcion }} />
-                            <br />
-                            <Editor height="200px" defaultLanguage="c" value={subtemaSeleccionado.ejemploCodigo} />
-                            <br />
-                            <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.recursos }} />
-                            <br />
-                        </div>
+                        {temaSeleccionado && (
+                            <>
+                                <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.titulo }} />
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.objetivos }} style={{textAlign: 'justify'}} />
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.descripcion }} style={{textAlign: 'justify'}} />
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: temaSeleccionado.recursos }} style={{textAlign: 'justify'}} />
+                                <br />
+                            </>
+                        )}
                     </Col>
                 </Row>
-            )}
-            {existeEjercicios && (
-                <>
-                    <Row>
+                {subtemaSeleccionado && (
+                    <Row ref={subtemaSectionRef}>
                         <Col>
-                            <h2>Selecciona un ejercicio:</h2>
-                            {ejercicios.map((ejercicio) => (
-                                <Button
-                                    key={ejercicio.id}
-                                    value={ejercicio.id}
-                                    onClick={() => {
-                                        actualizarEjercicioSeleccionado(ejercicio);
-                                        actualizarPreguntaSeleccionado(null);
-                                        setMostrarSolucion(false);
-                                        setSelectedOption(null);
-                                        setShowExplanation(false);
-                                    }}
-                                    className="mb-2"
-                                    variant="outline-primary"
-                                >
-                                    {cleanHtmlTags(ejercicio.titulo)}
-                                </Button>
-                            ))}
+                            <div>
+                                <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.titulo }} />
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.objetivos }} style={{textAlign: 'justify'}}/>
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.descripcion }} style={{textAlign: 'justify'}}/>
+                                <br />
+                                <Editor height="300px" defaultLanguage="c" value={subtemaSeleccionado.ejemploCodigo} />
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: subtemaSeleccionado.recursos }} style={{textAlign: 'justify'}}/>
+                                <br />
+                            </div>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
-                            <h2>Contenido del ejercicio:</h2>
-                            {ejercicioSeleccionado && (
-                                <div>
-                                    <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.titulo }} />
-                                    <br />
-                                    <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.instrucciones }} />
-                                    <br />
-                                    <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.restricciones }} />
-                                    <br />
-                                    <p>Realiza tu solución</p>
-                                    <EditorCompilador />
-                                    <br />
-                                    <Button onClick={() => setMostrarSolucion(!mostrarSolucion)}>
-                                        {mostrarSolucion ? "Ocultar solución" : "Mostrar solución"}
-                                    </Button>
-                                    <br />
-                                    {mostrarSolucion && (
-                                        <>
-                                            <Editor height="200px" defaultLanguage="c" value={ejercicioSeleccionado.solucion} />
-                                            <br />
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </Col>
-                    </Row>
-                    {existePreguntas && (
+                )}
+
+                {existeEjercicios && subtemaSeleccionado && (
+                    <>
                         <Row>
                             <Col>
-                                <h2>Preguntas asociadas al ejercicio:</h2>
-                                {preguntas.map((pregunta) => (
-                                    <Button
-                                        key={pregunta.id}
-                                        onClick={() => {
-                                            actualizarPreguntaSeleccionado(pregunta);
-                                            setMostrarSolucion(false);
-                                            setSelectedOption(null);
-                                            setShowExplanation(false);
-                                        }}
-                                        className="mb-2"
-                                        variant="outline-primary"
-                                    >
-                                        {cleanHtmlTags(pregunta.enunciado)}
-                                    </Button>
+                                {ejercicios.map((ejercicio) => (
+                                    <div key={ejercicio.idEjercicio} className="mb-3">
+                                        <Button
+                                            value={ejercicio.idEjercicio}
+                                            onClick={() => {
+                                                actualizarEjercicioSeleccionado(ejercicio);
+                                                actualizarPreguntaSeleccionado(null);
+                                                setMostrarSolucion(false);
+                                                setSelectedOption(null);
+                                                setShowExplanation(false);
+                                            }}
+                                            className="mb-2 w-100"
+                                            variant="outline-success"
+                                        >
+                                            {cleanHtmlTags(ejercicio.titulo)}
+                                        </Button>
+                                        {ejercicio.progreso !== undefined && (
+                                            <ProgressBar className="mb-2" variant="success">
+                                                <ProgressBar
+                                                    now={ejercicio.progreso}
+                                                    label={`${ejercicio.progreso}%`}
+                                                />
+                                            </ProgressBar>
+                                        )}
+                                    </div>
                                 ))}
                             </Col>
                         </Row>
-                    )}
-                </>
-            )}
-            {preguntaSeleccionado && (
-                <>
-                    <Row>
-                        <Col>
-                            <h2>Contenido de la pregunta:</h2>
-                            <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.enunciado }} />
-                            <Form>
-                                {['a', 'b', 'c', 'd'].map((option) => (
-                                    <Form.Check
-                                        key={option}
-                                        type="radio"
-                                        id={`option-${option}`}
-                                        label={cleanHtmlTags(preguntaSeleccionado[`opcion_${option.toLowerCase()}`])}
-                                        onChange={() => handleOptionChange(option)}
-                                        checked={selectedOption === option}
-                                        disabled={showExplanation || selectedOption !== null}
-                                    />
-                                ))}
-                            </Form>
-                            {showExplanation && (
-                                <>
-                                    {isCorrect ? (
-                                        <>
-                                            <p>Excelente, respuesta la opción seleccionada es la correcta</p>
-                                            <h2>Justificación</h2>
-                                            <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.justificacion }} />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p>Oh, tu respuesta es incorrecta de la opción, la opción correcta es la opción {preguntaSeleccionado.respuesta_correcta}.</p>
-                                            <Button onClick={volverAIntentarlo}>
-                                                Volver a intentarlo
-                                            </Button>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                            <br />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <ComentariosForm />
-                        </Col>
-                    </Row>
-                    <br />
-                </>
+                        <Row>
+                            <Col>
+                                <br />
+                                {ejercicioSeleccionado && (
+                                    <div>
+                                        <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.titulo }} />
+                                        <br />
+                                        <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.instrucciones }} style={{textAlign: 'justify'}}/>
+                                        <br />
+                                        <div dangerouslySetInnerHTML={{ __html: ejercicioSeleccionado.restricciones }} style={{textAlign: 'justify'}}/>
+                                        <br />
+                                        <p>Realiza tu solución</p>
+                                        <EditorCompilador />
+                                        <br />
+                                        <Button variant="success" onClick={() => setMostrarSolucion(!mostrarSolucion)}>
+                                            {mostrarSolucion ? "Ocultar solución" : "Mostrar solución"}
+                                        </Button>
+                                        <br />
+                                        {mostrarSolucion && (
+                                            <>
+                                                <br />
+                                                <Editor height="300px" defaultLanguage="c" value={ejercicioSeleccionado.solucion} />
+                                                <br />
+                                            </>
+                                        )}
+                                        <br />
+                                    </div>
+                                )}
+                            </Col>
+                        </Row>
+                        
+                        {existePreguntas && ejercicioSeleccionado && (
+                            <Row>
+                                <Col>
+                                    {preguntas.map((pregunta) => (
+                                        <Button
+                                            key={pregunta.idPregunta}
+                                            onClick={() => {
+                                                actualizarPreguntaSeleccionado(pregunta);
+                                                setMostrarSolucion(false);
+                                                setSelectedOption(null);
+                                                setShowExplanation(false);
+                                            }}
+                                            className="mb-2 w-100"
+                                            variant="outline-success"
+                                        >
+                                            {cleanHtmlTags(pregunta.enunciado)}
+                                        </Button>
+                                    ))}
+                                </Col>
+                            </Row>
+                        )}
+                    </>
+                    
+                )}
 
-            )}
-        </Container>
+                {preguntaSeleccionado && (
+                    <>
+                        <Row>
+                            <Col>
+                                <br />
+                                <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.enunciado }} style={{textAlign: 'justify'}}/>
+                                <br />
+                                <Form>
+                                    {['a', 'b', 'c', 'd'].map((option) => (
+                                        <Form.Check
+                                            key={option}
+                                            type="radio"
+                                            id={`option-${option}`}
+                                            label={cleanHtmlTags(preguntaSeleccionado[`opcion_${option.toLowerCase()}`])}
+                                            onChange={() => handleOptionChange(option)}
+                                            checked={selectedOption === option}
+                                            disabled={showExplanation || selectedOption !== null}
+                                        />
+                                    ))}
+                                </Form>
+                                {showExplanation && (
+                                    <>
+                                        {isCorrect ? (
+                                            <>
+                                                <br />
+                                                <p>Excelente, respuesta la opción seleccionada es la correcta</p>
+                                                <br />
+                                                <div dangerouslySetInnerHTML={{ __html: preguntaSeleccionado.justificacion }} />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p>Oh, tu respuesta es incorrecta, inténtalo de nuevo.</p>
+                                                <Button variant="success" onClick={volverAIntentarlo}>
+                                                    Volver a intentarlo
+                                                </Button>
+                                                <br />
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                                <br />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <ComentariosForm />
+                            </Col>
+                        </Row>
+                        <br />
+                    </>
+
+                )}
+            </Container>
+        </div>
     );
 };
 

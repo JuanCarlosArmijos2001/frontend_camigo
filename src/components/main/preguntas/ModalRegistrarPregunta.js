@@ -422,14 +422,14 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
     const crearPregunta = async () => {
         try {
             const datosFormulario = {
-                enunciado: enunciado, // Limpia las etiquetas HTML del enunciado
+                enunciado: DOMPurify.sanitize(enunciado),
                 opcion_a: DOMPurify.sanitize(opcion_a),
                 opcion_b: DOMPurify.sanitize(opcion_b),
                 opcion_c: DOMPurify.sanitize(opcion_c),
                 opcion_d: DOMPurify.sanitize(opcion_d),
                 respuesta_correcta: DOMPurify.sanitize(respuesta_correcta),
                 justificacion: DOMPurify.sanitize(justificacion),
-                idEjercicio: ejercicioSeleccionado.id,
+                idEjercicio: ejercicioSeleccionado.idEjercicio,
             };
 
             const response = await axios.post(
@@ -444,6 +444,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
             );
 
             if (response.data.en === 1) {
+                console.log("Respuesta del servidor al crear pregunta:", response.data);
                 // Registro en el historial
                 const nuevaPreguntaId = response.data.idPregunta;
                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó la pregunta con el enunciado: "${cleanHtmlTags(
@@ -483,7 +484,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
             <Button variant="success" onClick={handleShow}>
                 Crear
             </Button>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="xl" style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea una nueva pregunta de control</Modal.Title>
                 </Modal.Header>

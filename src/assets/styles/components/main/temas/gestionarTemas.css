@@ -8,6 +8,8 @@
 
 .informacionTema h1{
   font-family: 'Montserrat', sans-serif;
+  margin-top: 20px;
+  text-align: center;
 }
 .informacionTema p{
   font-family: 'Montserrat', sans-serif;
@@ -17,7 +19,8 @@
 .contenedorTabla {
   position: relative;
   width: 100%; 
-  max-width: 350px;
+  min-width: 360px;
+  max-width: 560px;
   height: 325px;
   overflow-y: scroll;
   padding: 10px;
@@ -54,9 +57,10 @@
 
 
 .botonesDerecha .btn {
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
   font-family: 'Montserrat', sans-serif;
 }
 

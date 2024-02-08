@@ -88,64 +88,6 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
         return false;
     };
 
-    // const crearTema = async () => {
-    //     try {
-    //         const datosFormulario = {
-    //             titulo: DOMPurify.sanitize(titulo),
-    //             objetivos: DOMPurify.sanitize(objetivos),
-    //             descripcion: DOMPurify.sanitize(descripcion),
-    //             recursos: DOMPurify.sanitize(recursos),
-    //             idUsuario: usuarioDetalles.id,
-    //         };
-
-    //         const response = await axios.post(
-    //             "http://localhost:5000/temas/registrarTema",
-    //             datosFormulario,
-    //             {
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     version: "1.0.0",
-    //                 },
-    //             }
-    //         );
-
-    //         console.log("Respuesta del servidor al crear el tema:", response.data);
-
-    //         if (response.data.en === 1) {
-    //             const nuevoTemaId = response.data.idTema; // Obtén el ID del tema creado
-    //             const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el tema con el título: "${cleanHtmlTags(titulo)}"`;
-
-    //             console.log(mensaje);
-
-    //             // Llama al endpoint de historial para registrar el cambio
-    //             const usuarioId = usuarioDetalles.id;
-    //             axios
-    //                 .post("http://localhost:5000/historial/registrarCambio", {
-    //                     tipoEntidad: "tema",
-    //                     idTema: nuevoTemaId,
-    //                     detalles: mensaje,
-    //                     idUsuario: usuarioId,
-    //                 })
-    //                 .then((historialResponse) => {
-    //                     if (historialResponse.data.en === 1) {
-    //                         console.log("Cambio registrado en el historial");
-    //                         cargarTemas();
-    //                         handleClose();
-    //                     } else {
-    //                         console.log("No se pudo registrar el cambio en el historial");
-    //                     }
-    //                 })
-    //                 .catch((error) => {
-    //                     console.error("Error al registrar el cambio en el historial:", error);
-    //                 });
-    //         } else {
-    //             console.log("No se pudo crear el tema");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error al crear el tema:", error);
-    //     }
-    // };
-
     const crearTema = async () => {
         try {
             const datosFormulario = {
@@ -211,7 +153,7 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
             <Button variant="success" onClick={handleShow}>
                 Crear
             </Button>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="xl" style={{zIndex:1500}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea un nuevo tema</Modal.Title>
                 </Modal.Header>
@@ -328,3 +270,5 @@ export default function ModalRegistrarTema({ cargarTemas, temas }) {
         </>
     );
 }
+
+//---------------------------------------------------------------------
