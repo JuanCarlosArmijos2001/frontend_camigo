@@ -1,10 +1,33 @@
 import React, { useState, useRef } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, Snackbar } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, Snackbar, Box } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import axios from "axios";
 import DOMPurify from "dompurify";
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import 'react-quill/dist/quill.snow.css';
+
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
 
 export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGeneral, temas }) {
     const formRef = useRef(null);
@@ -46,6 +69,7 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
 
     const isQuillContentAvailable = (content) => content.replace(/<[^>]+>/g, "").trim().length > 0;
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (
@@ -55,6 +79,12 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
             !isQuillContentAvailable(recursos)
         ) {
             setSnackbarMessage("Por favor completa todos los campos.");
+            setSnackbarColor("error");
+            return;
+        }
+
+        if (!validarLongitudTitulo(titulo)) {
+            setSnackbarMessage("El título no puede exceder los 255 caracteres.");
             setSnackbarColor("error");
             return;
         }
@@ -85,7 +115,15 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
         setRecursos("");
     };
 
-    const tituloExistente = (titulo) => temas?.some((tema) => tema.titulo === titulo);
+    const tituloExistente = (nuevoTitulo) => {
+        const tituloLimpio = cleanHtmlTags(nuevoTitulo).trim();
+        return temas?.some((tema) => cleanHtmlTags(tema.titulo).trim() === tituloLimpio);
+    };
+
+    const validarLongitudTitulo = (titulo) => {
+        const tituloLimpio = cleanHtmlTags(titulo).trim();
+        return tituloLimpio.length <= 255;
+    };
 
     const crearTema = async () => {
         const datosFormulario = {
@@ -176,10 +214,12 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="h6">Previsualizar</Typography>
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
+                            <CompactPreview>
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
+                            </CompactPreview>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -194,7 +234,7 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
             </Dialog>
             <Snackbar
                 open={!!snackbarMessage}
-                autoHideDuration={6000}
+                autoHideDuration={2000}
                 onClose={() => setSnackbarMessage("")}
                 message={snackbarMessage}
                 ContentProps={{

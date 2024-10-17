@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import {
     Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography,
-    IconButton, Snackbar, FormControl, Select, MenuItem
+    IconButton, Snackbar, FormControl, Select, MenuItem, Box
 } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import axios from "axios";
 import DOMPurify from "dompurify";
@@ -10,6 +11,28 @@ import "react-quill/dist/quill.snow.css";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import CloseIcon from '@mui/icons-material/Close';
+
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
 
 export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) {
     const formRef = useRef(null);
@@ -54,11 +77,6 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
         return content;
     };
 
-    const cleanHtmlTags = (htmlContent) => {
-        const doc = new DOMParser().parseFromString(htmlContent, "text/html");
-        return doc.body.textContent || "";
-    };
-
     const isQuillContentAvailable = (content) => {
         if (typeof content === "string" || content instanceof String) {
             const textOnly = content.replace(/<[^>]+>/g, "").trim();
@@ -66,6 +84,17 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
         }
         return false;
     };
+
+    const cleanHtmlTags = (htmlContent) => {
+        const doc = new DOMParser().parseFromString(htmlContent, "text/html");
+        return doc.body.textContent || "";
+    };
+
+    const preguntaExistente = (enunciado) => {
+        const enunciadoLimpio = cleanHtmlTags(enunciado).toLowerCase();
+        return preguntas?.some((pregunta) => cleanHtmlTags(pregunta.enunciado).toLowerCase() === enunciadoLimpio);
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -101,9 +130,6 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
         }
     };
 
-    const preguntaExistente = (enunciado) => {
-        return preguntas?.some((pregunta) => pregunta.enunciado === enunciado);
-    };
 
     const crearPregunta = async () => {
         const datosFormulario = {
@@ -248,12 +274,14 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="h6">Previsualizar</Typography>
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(enunciado) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_a) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_b) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_c) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_d) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(justificacion) }} />
+                            <CompactPreview>
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(enunciado) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_a) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_b) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_c) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_d) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(justificacion) }} />
+                            </CompactPreview>
                         </Grid>
                     </Grid>
                 </DialogContent>

@@ -11,13 +11,14 @@ import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 
+
 export default function GestionarContenido({ cargarTemasGeneral }) {
     const { temaSeleccionado } = useTemaSeleccionado();
     const { subtemaSeleccionado } = useSubtemaSeleccionado();
     const { ejercicioSeleccionado } = useEjercicioSeleccionado();
 
     const sectionStyle = {
-        height: '350px',
+        height: '650px',
         display: 'flex',
         flexDirection: 'column',
         p: 2,
@@ -29,6 +30,21 @@ export default function GestionarContenido({ cargarTemasGeneral }) {
     return (
         <Container maxWidth="xl" sx={{ my: 4 }}>
             <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Typography
+                        variant="h4"
+                        align="left"
+                        gutterBottom
+                        sx={{
+                            color: '#3864A6',
+                            fontWeight: 'bold',
+                            fontFamily: 'Poppins, sans-serif',
+                        }}
+                    >
+                        Gestionar contenido
+                    </Typography>
+                </Grid>
+
                 {/* Fila Superior */}
                 <Grid item xs={12} md={6}>
                     <Box sx={sectionStyle}>

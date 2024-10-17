@@ -11,7 +11,7 @@ import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoCo
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import ModalRegistrarPregunta from "./ModalRegistrarPregunta";
 import ModalEditarPregunta from "./ModalEditarPregunta";
-import Imagen from "../../../assets/images/crear.svg";
+import ConfirmacionActivarDesactivarContenido from "../../utilities/ConfirmacionActivarDesactivarContenido";
 
 const GestionarPreguntas = () => {
     const [preguntas, setPreguntas] = useState([]);
@@ -22,6 +22,7 @@ const GestionarPreguntas = () => {
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
     const { usuarioDetalles } = useSesionUsuario();
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     useEffect(() => {
         if (ejercicioSeleccionado) {
@@ -35,60 +36,91 @@ const GestionarPreguntas = () => {
             idUsuario: usuarioDetalles.id,
             mensaje: "preguntas",
         })
-        .then((response) => {
-            if (response.data.en === 1) {
-                setPreguntas(response.data.preguntas);
-                setExistePreguntas(true);
-            } else {
-                console.log("Hubo un problema al cargar las preguntas");
-                setExistePreguntas(false);
-            }
-        })
-        .catch((error) => {
-            console.error("Error al obtener las preguntas:", error);
-        });
+            .then((response) => {
+                if (response.data.en === 1) {
+                    setPreguntas(response.data.preguntas);
+                    setExistePreguntas(true);
+                } else {
+                    console.log("Hubo un problema al cargar las preguntas");
+                    setExistePreguntas(false);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al obtener las preguntas:", error);
+            });
+    };
+
+    const handleActivarDesactivar = () => {
+        if (preguntaSeleccionado) {
+            setShowConfirmDialog(true);
+        }
     };
 
     const activarDesactivarPregunta = () => {
         if (preguntaSeleccionado) {
             const nuevoEstado = preguntaSeleccionado.estado === 1 ? -1 : 1;
+            const tituloLimpio = removeHtmlTags(preguntaSeleccionado.enunciado);
+            const accion = nuevoEstado === 1 ? 'activó' : 'desactivó';
+    
+            const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} la pregunta: "${tituloLimpio}"`;
+    
             axios.post(`http://localhost:5000/preguntas/activarDesactivarPregunta`, {
                 id: preguntaSeleccionado.idPregunta,
                 estado: nuevoEstado,
             })
-            .then((response) => {
-                if (response.data.en === 1) {
-                    cargarPreguntas();
-                    registrarCambioHistorial(nuevoEstado);
-                } else {
-                    console.log("No se pudo cambiar el estado de la pregunta");
-                }
-            })
-            .catch((error) => {
-                console.error("Error al cambiar el estado de la pregunta:", error);
-            });
+                .then((response) => {
+                    if (response.data.en === 1) {
+                        // Registrar el cambio en el historial con el mensaje detallado
+                        registrarCambioHistorial(preguntaSeleccionado.idPregunta, mensaje);
+                        
+                        // Actualizar la lista de preguntas después del cambio
+                        cargarPreguntas();
+                        
+                        // Actualizar la pregunta seleccionada con el nuevo estado
+                        actualizarPreguntaSeleccionado({...preguntaSeleccionado, estado: nuevoEstado});
+                        
+                        console.log(mensaje);
+                    } else {
+                        console.log("No se pudo cambiar el estado de la pregunta:", response.data.m);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error al cambiar el estado de la pregunta:", error);
+                });
         }
     };
 
-    const registrarCambioHistorial = (nuevoEstado) => {
-        const usuarioId = usuarioDetalles.id;
-        const estadoMensaje = nuevoEstado === 1 ? "activo" : "inactivo";
-        axios.post(`http://localhost:5000/historial/registrarCambio`, {
-            tipoEntidad: "pregunta",
-            idPregunta: preguntaSeleccionado.idPregunta,
-            detalles: `${usuarioDetalles.detallesPersona.nombres} cambió el estado de la pregunta "${cleanHtmlTags(preguntaSeleccionado.enunciado)}" a ${estadoMensaje}`,
-            idUsuario: usuarioId,
-        })
-        .then((historialResponse) => {
-            if (historialResponse.data.en === 1) {
-                console.log("Cambio registrado en el historial");
-            } else {
-                console.log("No se pudo registrar el cambio en el historial");
-            }
-        })
-        .catch((error) => {
-            console.error("Error al registrar el cambio en el historial:", error);
-        });
+    const registrarCambioHistorial = (idPregunta, detalles) => {
+        axios
+            .post(`http://localhost:5000/historial/registrarCambio`, {
+                tipoEntidad: "pregunta",
+                idTema: null,
+                idSubtema: null,
+                idEjercicio: ejercicioSeleccionado.idEjercicio,
+                idPregunta: idPregunta,
+                detalles: detalles,
+                idUsuario: usuarioDetalles.id
+            })
+            .then((response) => {
+                if (response.data.en === 1) {
+                    console.log("Cambio registrado en el historial:", response.data.m);
+                    // Actualizar el estado local del historial
+                    setHistorialCambios(prevHistorial => [...prevHistorial, {
+                        fecha: new Date(),
+                        detalles: detalles
+                    }]);
+                } else {
+                    console.error("Error al registrar el cambio en el historial:", response.data.m);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al registrar el cambio en el historial:", error);
+            });
+    };
+
+    const removeHtmlTags = (text) => {
+        if (!text) return '';
+        return text.replace(/<\/?[^>]+(>|$)/g, "");
     };
 
     const cleanHtmlTags = (htmlContent) => {
@@ -108,17 +140,17 @@ const GestionarPreguntas = () => {
                 idEntidad: preguntaSeleccionado.idPregunta,
                 tipoEntidad: "pregunta",
             })
-            .then((response) => {
-                if (response.data.en === 1) {
-                    setHistorialCambios(response.data.cambios);
-                    setShowHistorialModal(true);
-                } else {
-                    console.log("No se encontraron cambios para esta pregunta");
-                }
-            })
-            .catch((error) => {
-                console.error("Error al obtener el historial de cambios:", error);
-            });
+                .then((response) => {
+                    if (response.data.en === 1) {
+                        setHistorialCambios(response.data.cambios);
+                        setShowHistorialModal(true);
+                    } else {
+                        console.log("No se encontraron cambios para esta pregunta");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error al obtener el historial de cambios:", error);
+                });
         }
     };
 
@@ -128,7 +160,7 @@ const GestionarPreguntas = () => {
                 <>
                     <Grid item xs={12}>
                         <Typography variant="h4" align="center">Preguntas de control</Typography>
-                        <Typography variant="body2">Las preguntas con fondo color rojo están desactivadas</Typography>
+                        <Typography variant="body2">Las preguntas con fondo color rojo están desactivadas.</Typography>
                         <Typography variant="body2">Es necesario seleccionar una pregunta para editar o para cambiar su estado de activo a inactivo.</Typography>
                     </Grid>
 
@@ -185,6 +217,7 @@ const GestionarPreguntas = () => {
                             <ModalEditarPregunta
                                 cargarPreguntas={cargarPreguntas}
                                 preguntaParaEditar={preguntaSeleccionado}
+                                preguntas={preguntas}
                             />
                         </Grid>
                         <Grid item>
@@ -192,12 +225,22 @@ const GestionarPreguntas = () => {
                                 variant="contained"
                                 color="error"
                                 disabled={!preguntaSeleccionado}
-                                onClick={activarDesactivarPregunta}
+                                onClick={handleActivarDesactivar}
                                 size="small"
                             >
                                 {preguntaSeleccionado?.estado === 1 ? "Desactivar" : "Activar"}
                             </Button>
                         </Grid>
+                        <ConfirmacionActivarDesactivarContenido
+                            open={showConfirmDialog}
+                            onClose={() => setShowConfirmDialog(false)}
+                            onConfirm={() => {
+                                activarDesactivarPregunta();
+                                setShowConfirmDialog(false);
+                            }}
+                            itemSeleccionado={preguntaSeleccionado}
+                            tipoItem="pregunta"
+                        />
                         <Grid item>
                             <Button
                                 variant="contained"

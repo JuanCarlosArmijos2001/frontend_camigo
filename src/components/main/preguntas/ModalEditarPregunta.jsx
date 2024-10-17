@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
     Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography, IconButton, Snackbar,
-    Container, MenuItem, Select, FormControl, InputLabel
+    Container, MenuItem, Select, FormControl, InputLabel, Box
 } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import axios from "axios";
 import DOMPurify from "dompurify";
@@ -11,7 +12,30 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoContext";
 
-export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEditar }) {
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
+
+
+export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEditar, preguntas }) {
     const { usuarioDetalles } = useSesionUsuario();
     const { setPreguntaSeleccionado } = usePreguntaSeleccionado();
     const [open, setOpen] = useState(false);
@@ -38,7 +62,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
         setOpcion_a(preguntaParaEditar.opcion_a);
         setOpcion_b(preguntaParaEditar.opcion_b);
         setOpcion_c(preguntaParaEditar.opcion_c);
-        setOpcion_d(preguntaParaEditar.opcion_d);        
+        setOpcion_d(preguntaParaEditar.opcion_d);
         setRespuesta_correcta(preguntaParaEditar.respuesta_correcta);
         setJustificacion(preguntaParaEditar.justificacion);
         setEstado(preguntaParaEditar.estado);
@@ -80,6 +104,16 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
         return doc.body.textContent || "";
     };
 
+
+    const enunciadoExistente = (nuevoEnunciado) => {
+        const enunciadoLimpio = cleanHtmlTags(nuevoEnunciado).trim().toLowerCase();
+        return preguntas?.some((pregunta) =>
+            pregunta.idPregunta !== preguntaParaEditar.idPregunta &&
+            cleanHtmlTags(pregunta.enunciado).trim().toLowerCase() === enunciadoLimpio
+        );
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (
@@ -96,6 +130,13 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
             return;
         }
 
+        // Verificar si el enunciado ya existe
+        if (enunciadoExistente(enunciado)) {
+            setSnackbarMessage("El enunciado ya existe. Por favor, elige otro.");
+            setSnackbarColor("error");
+            return;
+        }
+
         try {
             await editarPregunta();
             setSnackbarMessage("Pregunta editada con éxito.");
@@ -107,6 +148,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
             setSnackbarColor("error");
         }
     };
+
 
     const editarPregunta = async () => {
         const datosFormulario = {
@@ -260,12 +302,14 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography variant="h6">Previsualizar</Typography>
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(enunciado) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_a) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_b) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_c) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_d) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(justificacion) }} />
+                                <CompactPreview>
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(enunciado) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_a) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_b) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_c) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(opcion_d) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(justificacion) }} />
+                                </CompactPreview>
                             </Grid>
                         </Grid>
                     </Container>

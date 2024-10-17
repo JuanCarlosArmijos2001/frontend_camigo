@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, Snackbar } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, Snackbar, Box } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
@@ -8,7 +9,29 @@ import 'react-quill/dist/quill.snow.css';
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 
-export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }) {
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
+
+export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar, subtemas }) {
     const formRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [titulo, setTitulo] = useState("");
@@ -62,6 +85,99 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
         return doc.body.textContent || "";
     };
 
+    const validarLongitudTitulo = (titulo) => {
+        const tituloLimpio = cleanHtmlTags(titulo).trim();
+        return tituloLimpio.length <= 255;
+    };
+
+    const tituloExistente = (nuevoTitulo) => {
+        const tituloLimpio = cleanHtmlTags(nuevoTitulo).trim().toLowerCase();
+        return subtemas?.some((subtema) =>
+            subtema.idSubtema !== subtemaParaEditar.idSubtema &&
+            cleanHtmlTags(subtema.titulo).trim().toLowerCase() === tituloLimpio
+        );
+    };
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     if (
+    //         !isQuillContentAvailable(titulo) ||
+    //         !isQuillContentAvailable(objetivos) ||
+    //         !isQuillContentAvailable(descripcion) ||
+    //         !isQuillContentAvailable(ejemploCodigo) ||
+    //         !isQuillContentAvailable(recursos) ||
+    //         !isQuillContentAvailable(retroalimentacion)
+    //     ) {
+    //         setSnackbarMessage("Por favor completa todos los campos.");
+    //         setSnackbarColor("error");
+    //         return;
+    //     }
+
+    //     // Validar la longitud del título
+    //     if (!validarLongitudTitulo(titulo)) {
+    //         setSnackbarMessage("El título no puede exceder los 255 caracteres.");
+    //         setSnackbarColor("error");
+    //         return;
+    //     }
+
+    //     // Verificar si ya existe un subtema con el mismo título
+    //     if (tituloExistente(titulo)) {
+    //         setSnackbarMessage("Ya existe un subtema con este título.");
+    //         setSnackbarColor("error");
+    //         return;
+    //     }
+
+    //     try {
+    //         const datosFormulario = {
+    //             id: subtemaParaEditar.idSubtema,
+    //             titulo: DOMPurify.sanitize(titulo),
+    //             objetivos: DOMPurify.sanitize(objetivos),
+    //             descripcion: DOMPurify.sanitize(descripcion),
+    //             ejemploCodigo: ejemploCodigo,
+    //             recursos: DOMPurify.sanitize(recursos),
+    //             retroalimentacion: DOMPurify.sanitize(retroalimentacion),
+    //             estado: estado,
+    //         };
+
+    //         const response = await axios.post(
+    //             `http://localhost:5000/subtemas/editarSubtema`,
+    //             datosFormulario,
+    //             {
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     version: "1.0.0",
+    //                 },
+    //             }
+    //         );
+
+    //         const { subtemaEditadoBackend } = response.data;
+    //         if (response.data.en === 1) {
+    //             let subtemaActualizado = { ...subtemaParaEditar };
+    //             subtemaActualizado.idSubtema = subtemaEditadoBackend.id;
+    //             subtemaActualizado.titulo = subtemaEditadoBackend.titulo;
+    //             subtemaActualizado.objetivos = subtemaEditadoBackend.objetivos;
+    //             subtemaActualizado.descripcion = subtemaEditadoBackend.descripcion;
+    //             subtemaActualizado.ejemploCodigo = subtemaEditadoBackend.ejemploCodigo;
+    //             subtemaActualizado.recursos = subtemaEditadoBackend.recursos;
+    //             subtemaActualizado.retroalimentacion = subtemaEditadoBackend.retroalimentacion;
+    //             subtemaActualizado.estado = subtemaEditadoBackend.estado;
+    //             setSubtemaSeleccionado(subtemaActualizado);
+
+    //             cargarSubtemas();
+    //             setSnackbarMessage("Subtema editado con éxito.");
+    //             setSnackbarColor("success");
+    //             handleClose();
+    //         } else {
+    //             setSnackbarMessage("No se pudo editar el subtema.");
+    //             setSnackbarColor("error");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error al editar el subtema:", error);
+    //         setSnackbarMessage("Error al editar el subtema.");
+    //         setSnackbarColor("error");
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (
@@ -76,7 +192,19 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
             setSnackbarColor("error");
             return;
         }
-
+    
+        if (!validarLongitudTitulo(titulo)) {
+            setSnackbarMessage("El título no puede exceder los 255 caracteres.");
+            setSnackbarColor("error");
+            return;
+        }
+    
+        if (tituloExistente(titulo)) {
+            setSnackbarMessage("Ya existe un subtema con este título.");
+            setSnackbarColor("error");
+            return;
+        }
+    
         try {
             const datosFormulario = {
                 id: subtemaParaEditar.idSubtema,
@@ -88,7 +216,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                 retroalimentacion: DOMPurify.sanitize(retroalimentacion),
                 estado: estado,
             };
-
+    
             const response = await axios.post(
                 `http://localhost:5000/subtemas/editarSubtema`,
                 datosFormulario,
@@ -99,7 +227,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                     },
                 }
             );
-
+    
             const { subtemaEditadoBackend } = response.data;
             if (response.data.en === 1) {
                 let subtemaActualizado = { ...subtemaParaEditar };
@@ -112,19 +240,20 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                 subtemaActualizado.retroalimentacion = subtemaEditadoBackend.retroalimentacion;
                 subtemaActualizado.estado = subtemaEditadoBackend.estado;
                 setSubtemaSeleccionado(subtemaActualizado);
-
+    
+                // Agregar registro al historial
                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el subtema con el título: "${cleanHtmlTags(titulo)}"`;
-
+    
                 await axios.post(`http://localhost:5000/historial/registrarCambio`, {
                     tipoEntidad: "subtema",
                     idSubtema: subtemaParaEditar.idSubtema,
                     detalles: mensaje,
                     idUsuario: usuarioDetalles.id,
                 });
-
+    
+                cargarSubtemas();
                 setSnackbarMessage("Subtema editado con éxito.");
                 setSnackbarColor("success");
-                cargarSubtemas();
                 handleClose();
             } else {
                 setSnackbarMessage("No se pudo editar el subtema.");
@@ -210,12 +339,14 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="h6">Previsualizar</Typography>
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(ejemploCodigo) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                            <CompactPreview>
+                            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
+                            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
+                            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
+                            <pre>{ejemploCodigo}</pre>
+                            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
+                            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                            </CompactPreview>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -230,7 +361,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar }
             </Dialog>
             <Snackbar
                 open={!!snackbarMessage}
-                autoHideDuration={6000}
+                autoHideDuration={2000}
                 onClose={() => setSnackbarMessage("")}
                 message={snackbarMessage}
                 ContentProps={{

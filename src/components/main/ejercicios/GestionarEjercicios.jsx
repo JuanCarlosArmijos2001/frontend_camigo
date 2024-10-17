@@ -5,7 +5,6 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody,
     TableCell, TableHead, TableRow, Icon
 } from "@mui/material";
-import Imagen from "../../../assets/images/crear.svg";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoContext";
@@ -13,6 +12,7 @@ import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import ModalRegistrarEjercicio from "./ModalRegistrarEjercicio";
 import ModalEditarEjercicio from "./ModalEditarEjercicio";
 import AddIcon from '@mui/icons-material/Add';
+import ConfirmacionActivarDesactivarContenido from "../../utilities/ConfirmacionActivarDesactivarContenido";
 
 const GestionarEjercicios = () => {
     const [ejercicios, setEjercicios] = useState([]);
@@ -24,6 +24,7 @@ const GestionarEjercicios = () => {
     const [existeEjercicios, setExisteEjercicios] = useState(false);
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     useEffect(() => {
         if (subtemaSeleccionado) {
@@ -77,10 +78,40 @@ const GestionarEjercicios = () => {
         }
     };
 
+    const handleActivarDesactivar = () => {
+        if (ejercicioSeleccionado) {
+            setShowConfirmDialog(true);
+        }
+    };
+
+    // const activarDesactivarEjercicio = () => {
+    //     if (ejercicioSeleccionado) {
+    //         const nuevoEstado = ejercicioSeleccionado.estado === 1 ? -1 : 1;
+
+    //         axios
+    //             .post(`http://localhost:5000/ejercicios/activarDesactivarEjercicio`, {
+    //                 id: ejercicioSeleccionado.idEjercicio,
+    //                 estado: nuevoEstado,
+    //             })
+    //             .then((response) => {
+    //                 if (response.data.en === 1) {
+    //                     cargarEjercicios();
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error al cambiar el estado del ejercicio:", error);
+    //             });
+    //     }
+    // };
+
     const activarDesactivarEjercicio = () => {
         if (ejercicioSeleccionado) {
             const nuevoEstado = ejercicioSeleccionado.estado === 1 ? -1 : 1;
-
+            const tituloLimpio = removeHtmlTags(ejercicioSeleccionado.titulo);
+            const accion = nuevoEstado === 1 ? 'activó' : 'desactivó';
+    
+            const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el ejercicio con el título: "${tituloLimpio}"`;
+    
             axios
                 .post(`http://localhost:5000/ejercicios/activarDesactivarEjercicio`, {
                     id: ejercicioSeleccionado.idEjercicio,
@@ -88,13 +119,52 @@ const GestionarEjercicios = () => {
                 })
                 .then((response) => {
                     if (response.data.en === 1) {
+                        // Registrar el cambio en el historial con el mensaje detallado
+                        registrarCambioHistorial(ejercicioSeleccionado.idEjercicio, mensaje);
+                        
+                        // Actualizar la lista de ejercicios después del cambio
                         cargarEjercicios();
+                        
+                        // Actualizar el ejercicio seleccionado con el nuevo estado
+                        actualizarEjercicioSeleccionado({...ejercicioSeleccionado, estado: nuevoEstado});
+                        
+                        console.log(mensaje);
+                    } else {
+                        console.log("Hubo un problema al cambiar el estado del ejercicio:", response.data.m);
                     }
                 })
                 .catch((error) => {
                     console.error("Error al cambiar el estado del ejercicio:", error);
                 });
         }
+    };
+
+    const registrarCambioHistorial = (idEjercicio, detalles) => {
+        axios
+            .post(`http://localhost:5000/historial/registrarCambio`, {
+                tipoEntidad: "ejercicio",
+                idTema: null,
+                idSubtema: subtemaSeleccionado.idSubtema,
+                idEjercicio: idEjercicio,
+                idPregunta: null,
+                detalles: detalles,
+                idUsuario: usuarioDetalles.id
+            })
+            .then((response) => {
+                if (response.data.en === 1) {
+                    console.log("Cambio registrado en el historial:", response.data.m);
+                    // Actualizar el estado local del historial
+                    setHistorialCambios(prevHistorial => [...prevHistorial, {
+                        fecha: new Date(),
+                        detalles: detalles
+                    }]);
+                } else {
+                    console.error("Error al registrar el cambio en el historial:", response.data.m);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al registrar el cambio en el historial:", error);
+            });
     };
 
     const removeHtmlTags = (text) => {
@@ -114,7 +184,7 @@ const GestionarEjercicios = () => {
                 <>
                     <Grid item xs={12}>
                         <Typography variant="h4" align="center">Ejercicios</Typography>
-                        <Typography variant="body2">Los ejercicios con fondo color rojo están desactivados</Typography>
+                        <Typography variant="body2">Los ejercicios con fondo color rojo están desactivados.</Typography>
                         <Typography variant="body2">Es necesario seleccionar un ejercicio para editar o para cambiar su estado de activo a inactivo.</Typography>
                     </Grid>
 
@@ -186,6 +256,7 @@ const GestionarEjercicios = () => {
                             <ModalEditarEjercicio
                                 cargarEjercicios={cargarEjercicios}
                                 ejercicioParaEditar={ejercicioSeleccionado}
+                                ejercicios={ejercicios}
                             />
                         </Grid>
                         <Grid item>
@@ -193,12 +264,22 @@ const GestionarEjercicios = () => {
                                 variant="contained"
                                 color="error"
                                 disabled={!ejercicioSeleccionado}
-                                onClick={activarDesactivarEjercicio}
+                                onClick={handleActivarDesactivar}
                                 size="small"
                             >
                                 {ejercicioSeleccionado?.estado === 1 ? "Desactivar" : "Activar"}
                             </Button>
                         </Grid>
+                        <ConfirmacionActivarDesactivarContenido
+                            open={showConfirmDialog}
+                            onClose={() => setShowConfirmDialog(false)}
+                            onConfirm={() => {
+                                activarDesactivarEjercicio();
+                                setShowConfirmDialog(false);
+                            }}
+                            itemSeleccionado={ejercicioSeleccionado}
+                            tipoItem="ejercicio"
+                        />
                         <Grid item>
                             <Button
                                 variant="contained"

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-    Grid, Button, TextField, Card, CardContent, CardMedia, Typography,
+    Grid, Button, TextField, Card, CardContent, Typography,
     Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody,
     TableCell, TableHead, TableRow, Icon
 } from "@mui/material";
-import Imagen from '../../../assets/images/crear.svg';
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
@@ -14,6 +13,7 @@ import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import ModalRegistrarSubtema from "./ModalRegistrarSubtema";
 import ModalEditarSubtema from "./ModalEditarSubtema";
 import AddIcon from "@mui/icons-material/Add";
+import ConfirmacionActivarDesactivarContenido from "../../utilities/ConfirmacionActivarDesactivarContenido";
 
 const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
     const [subtemas, setSubtemas] = useState([]);
@@ -26,6 +26,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
     const [existeSubtemas, setExisteSubtemas] = useState(false);
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     useEffect(() => {
         if (temaSeleccionado) {
@@ -79,10 +80,41 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
         }
     };
 
+    const handleActivarDesactivar = () => {
+        if (subtemaSeleccionado) {
+            setShowConfirmDialog(true);
+        }
+    };
+
+    // const activarDesactivarSubtema = () => {
+    //     if (subtemaSeleccionado) {
+    //         const nuevoEstado = subtemaSeleccionado.estado === 1 ? -1 : 1;
+
+    //         axios
+    //             .post(`http://localhost:5000/subtemas/activarDesactivarSubtema`, {
+    //                 id: subtemaSeleccionado.idSubtema,
+    //                 estado: nuevoEstado,
+    //             })
+    //             .then((response) => {
+    //                 if (response.data.en === 1) {
+    //                     cargarSubtemas();
+    //                     if (cargarSubtemasGeneral) cargarSubtemasGeneral();
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error al cambiar el estado del subtema:", error);
+    //             });
+    //     }
+    // };
+
     const activarDesactivarSubtema = () => {
         if (subtemaSeleccionado) {
             const nuevoEstado = subtemaSeleccionado.estado === 1 ? -1 : 1;
-
+            const tituloLimpio = removeHtmlTags(subtemaSeleccionado.titulo);
+            const accion = nuevoEstado === 1 ? 'activó' : 'desactivó';
+    
+            const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el subtema con el título: "${tituloLimpio}"`;
+    
             axios
                 .post(`http://localhost:5000/subtemas/activarDesactivarSubtema`, {
                     id: subtemaSeleccionado.idSubtema,
@@ -90,14 +122,57 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
                 })
                 .then((response) => {
                     if (response.data.en === 1) {
+                        // Registrar el cambio en el historial con el mensaje detallado
+                        registrarCambioHistorial(subtemaSeleccionado.idSubtema, mensaje);
+                        
+                        // Actualizar la lista de subtemas después del cambio
                         cargarSubtemas();
-                        if (cargarSubtemasGeneral) cargarSubtemasGeneral();
+                        
+                        // Si cargarSubtemasGeneral es una función proporcionada como prop, llamarla
+                        if (typeof cargarSubtemasGeneral === 'function') {
+                            cargarSubtemasGeneral();
+                        }
+                        
+                        // Actualizar el subtema seleccionado con el nuevo estado
+                        actualizarSubtemaSeleccionado({...subtemaSeleccionado, estado: nuevoEstado});
+                        
+                        console.log(mensaje);
+                    } else {
+                        console.log("Hubo un problema al cambiar el estado del subtema:", response.data.m);
                     }
                 })
                 .catch((error) => {
                     console.error("Error al cambiar el estado del subtema:", error);
                 });
         }
+    };
+
+    const registrarCambioHistorial = (idSubtema, detalles) => {
+        axios
+            .post(`http://localhost:5000/historial/registrarCambio`, {
+                tipoEntidad: "subtema",
+                idTema: temaSeleccionado.idTema,
+                idSubtema: idSubtema,
+                idEjercicio: null,
+                idPregunta: null,
+                detalles: detalles,
+                idUsuario: usuarioDetalles.id
+            })
+            .then((response) => {
+                if (response.data.en === 1) {
+                    console.log("Cambio registrado en el historial:", response.data.m);
+                    // Actualizar el estado local del historial
+                    setHistorialCambios(prevHistorial => [...prevHistorial, {
+                        fecha: new Date(),
+                        detalles: detalles
+                    }]);
+                } else {
+                    console.error("Error al registrar el cambio en el historial:", response.data.m);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al registrar el cambio en el historial:", error);
+            });
     };
 
     const removeHtmlTags = (text) => {
@@ -117,7 +192,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
                 <>
                     <Grid item xs={12}>
                         <Typography variant="h4" align="center">Subtemas</Typography>
-                        <Typography variant="body2">Los subtemas con fondo color rojo están desactivados</Typography>
+                        <Typography variant="body2">Los subtemas con fondo color rojo están desactivados.</Typography>
                         <Typography variant="body2">Es necesario seleccionar un subtema para editar o para cambiar su estado de activo a inactivo.</Typography>
                     </Grid>
 
@@ -191,6 +266,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
                             <ModalEditarSubtema
                                 cargarSubtemas={cargarSubtemas}
                                 subtemaParaEditar={subtemaSeleccionado}
+                                subtemas={subtemas}
                             />
                         </Grid>
                         <Grid item>
@@ -198,12 +274,22 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
                                 variant="contained"
                                 color="error"
                                 disabled={!subtemaSeleccionado}
-                                onClick={activarDesactivarSubtema}
+                                onClick={handleActivarDesactivar}
                                 size="small"
                             >
                                 {subtemaSeleccionado?.estado === 1 ? "Desactivar" : "Activar"}
                             </Button>
                         </Grid>
+                        <ConfirmacionActivarDesactivarContenido
+                            open={showConfirmDialog}
+                            onClose={() => setShowConfirmDialog(false)}
+                            onConfirm={() => {
+                                activarDesactivarSubtema();
+                                setShowConfirmDialog(false);
+                            }}
+                            itemSeleccionado={subtemaSeleccionado}
+                            tipoItem="subtema"
+                        />
                         <Grid item>
                             <Button
                                 variant="contained"

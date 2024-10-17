@@ -193,7 +193,7 @@ export default function PaginaInicio() {
                                     ¿Qué es C'amigo?
                                 </Typography>
                                 <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'text.secondary', textAlign: 'justify' }}>
-                                    C'amigo es una herramienta educativa para estudiantes de programación en C. Diseñada para complementar las clases presenciales, permite a los usuarios reforzar los temas vistos en el aula y explorar conceptos futuros. Con C'amigo, los estudiantes pueden practicar, repasar y ampliar sus conocimientos en programación en C, adaptándose a su propio ritmo de aprendizaje.
+                                    C'amigo es una herramienta para estudiantes de programación en C. Diseñada para complementar las clases presenciales, permite a los usuarios reforzar los temas vistos en el aula y explorar conceptos futuros. Con C'amigo, los estudiantes pueden practicar, repasar y ampliar sus conocimientos en programación en C, adaptándose a su propio ritmo de aprendizaje.
                                 </Typography>
                             </Box>
                         </Grid>
@@ -224,44 +224,6 @@ export default function PaginaInicio() {
                             </Paper>
                         </Grid>
                     </Grid>
-
-                    {/* Sección de Manuales de Usuario */}
-                    <Box sx={{ mb: 6, animation: `${fadeInUp} 1s ease-out 0.9s both` }}>
-                        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', textAlign: 'center', mb: 4 }}>
-                            Manuales de Usuario
-                        </Typography>
-                        <Grid container spacing={3} justifyContent="center">
-                            {[
-                                { label: 'Estudiante', pdf: manualEstudiante },
-                                { label: 'Docente', pdf: manualDocente }
-                            ].map((manual, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        startIcon={<CloudDownload />}
-                                        component="a"
-                                        href={manual.pdf}
-                                        download={`Manual_${manual.label}.pdf`}
-                                        sx={{
-                                            py: 2,
-                                            backgroundColor: 'primary.main',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'primary.dark',
-                                                transform: 'translateY(-3px)',
-                                                boxShadow: '0 6px 20px rgba(56, 100, 166, 0.3)',
-                                            },
-                                            transition: 'all 0.3s ease',
-                                        }}
-                                    >
-                                        {manual.label}
-                                    </Button>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
-
                     {/* Sección de Contacto */}
                     <Paper elevation={3} sx={{
                         p: 4,

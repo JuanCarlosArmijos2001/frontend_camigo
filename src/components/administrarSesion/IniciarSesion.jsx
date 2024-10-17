@@ -15,7 +15,8 @@ import { useSesionUsuario } from '../../context/SesionUsuarioContext';
 import { jwtDecode } from 'jwt-decode';
 import RegistrarEstudiante from './RegistrarEstudiante';
 import LogoCamigoCarrera from '../../assets/images/logoCamigoCarrera.svg';
-
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function Copyright(props) {
     return (
@@ -38,7 +39,7 @@ export default function IniciarSesion() {
     const { iniciarSesion, cerrarSesion } = useSesionUsuario();
     const [error, setError] = useState(null);
     const [mostrarRegistro, setMostrarRegistro] = useState(false);
-    
+    const [openSnackbar, setOpenSnackbar] = useState(false);
 
     useEffect(() => {
         const verificarToken = () => {
@@ -50,6 +51,7 @@ export default function IniciarSesion() {
                 if (decodedToken.exp * 1000 < Date.now()) {
                     cerrarSesion();
                     setError('La sesión ha expirado. Inicia sesión nuevamente.');
+                    setOpenSnackbar(true);
                 }
             }
         };
@@ -61,11 +63,13 @@ export default function IniciarSesion() {
         e.preventDefault();
         if (!email || !clave) {
             setError('Por favor, complete todos los campos.');
+            setOpenSnackbar(true);
             return;
         }
 
         if (!validarFormatoEmail(email)) {
             setError('Ingrese un correo electrónico válido.');
+            setOpenSnackbar(true);
             return;
         }
 
@@ -91,13 +95,14 @@ export default function IniciarSesion() {
                 console.log('Sesión iniciada correctamente');
             } else {
                 setError(m);
+                setOpenSnackbar(true);
                 console.error('Error en autenticación:', m);
             }
         } catch (error) {
             setError('Error al iniciar sesión. Por favor, inténtelo de nuevo.');
+            setOpenSnackbar(true);
             console.error('Error en la petición de autenticación:', error);
         }
-
     };
 
     const validarFormatoEmail = (correo) => {
@@ -107,6 +112,13 @@ export default function IniciarSesion() {
 
     const handleMostrarRegistro = () => {
         setMostrarRegistro(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
     };
 
     return (
@@ -144,11 +156,6 @@ export default function IniciarSesion() {
                             <Typography component="h1" variant="h5">
                                 Iniciar sesión
                             </Typography>
-                            {error && (
-                                <Typography variant="body1" color="error" align="center">
-                                    {error}
-                                </Typography>
-                            )}
                             <Box component="form" noValidate onSubmit={handleIniciarSesion} sx={{ mt: 1 }}>
                                 <TextField
                                     margin="normal"
@@ -206,6 +213,11 @@ export default function IniciarSesion() {
             ) : (
                 <RegistrarEstudiante />
             )}
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                    {error}
+                </Alert>
+            </Snackbar>
         </ThemeProvider>
     );
 }

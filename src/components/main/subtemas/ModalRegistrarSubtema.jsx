@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import {
     Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography,
-    IconButton, Snackbar
+    IconButton, Snackbar, Box
 } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
@@ -11,6 +12,28 @@ import "react-quill/dist/quill.snow.css";
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import CloseIcon from '@mui/icons-material/Close';
+
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
 
 export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
     const formRef = useRef(null);
@@ -56,6 +79,16 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
 
     const isQuillContentAvailable = (content) => content.replace(/<[^>]+>/g, "").trim().length > 0;
 
+    const validarLongitudTitulo = (titulo) => {
+        const tituloLimpio = cleanHtmlTags(titulo).trim();
+        return tituloLimpio.length <= 255;
+    };
+
+    const tituloExistente = (nuevoTitulo) => {
+        const tituloLimpio = cleanHtmlTags(nuevoTitulo).trim();
+        return subtemas?.some((subtema) => cleanHtmlTags(subtema.titulo).trim() === tituloLimpio);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (
@@ -67,6 +100,13 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
             !isQuillContentAvailable(retroalimentacion)
         ) {
             setSnackbarMessage("Por favor completa todos los campos.");
+            setSnackbarColor("error");
+            return;
+        }
+
+        // 3. Validar longitud del título
+        if (!validarLongitudTitulo(titulo)) {
+            setSnackbarMessage("El título no puede exceder los 255 caracteres.");
             setSnackbarColor("error");
             return;
         }
@@ -89,9 +129,6 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
         }
     };
 
-    const tituloExistente = (titulo) => {
-        return subtemas?.some((subtema) => subtema.titulo === cleanHtmlTags(titulo));
-    };
 
     const crearSubtema = async () => {
         const datosFormulario = {
@@ -220,12 +257,14 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="h6">Previsualizar</Typography>
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
-                            <pre>{ejemploCodigo}</pre>
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
-                            <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                            <CompactPreview>
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(objetivos) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(descripcion) }} />
+                                <pre>{ejemploCodigo}</pre>
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(recursos) }} />
+                                <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                            </CompactPreview>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -240,7 +279,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
             </Dialog>
             <Snackbar
                 open={!!snackbarMessage}
-                autoHideDuration={6000}
+                autoHideDuration={2000}
                 onClose={() => setSnackbarMessage("")}
                 message={snackbarMessage}
                 ContentProps={{

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Grid, Button, TextField, Card, CardContent, CardMedia, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
-import Imagen from '../../../assets/images/crear.svg';
+import { Grid, Button, TextField, Card, CardContent, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableHead, TableRow, Icon } from "@mui/material";
 import { useTemaSeleccionado } from "../../../context/TemaSeleccionadoContext";
 import { useSubtemaSeleccionado } from "../../../context/SubtemaSeleccionadoContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
@@ -9,6 +8,8 @@ import { usePreguntaSeleccionado } from "../../../context/PreguntaSeleccionadoCo
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import ModalRegistrarTema from "./ModalRegistrarTema";
 import ModalEditarTema from "./ModalEditarTema";
+import AddIcon from "@mui/icons-material/Add";
+import ConfirmacionActivarDesactivarContenido from "../../utilities/ConfirmacionActivarDesactivarContenido";
 
 const GestionarTemas = ({ cargarTemasGeneral }) => {
     const [temas, setTemas] = useState([]);
@@ -20,6 +21,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
     const [term, setTerm] = useState('');
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     useEffect(() => {
         cargarTemasGestionar();
@@ -66,10 +68,20 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
         }
     };
 
+    const handleActivarDesactivar = () => {
+        if (temaSeleccionado) {
+            setShowConfirmDialog(true);
+        }
+    };
+
     const activarDesactivarTema = () => {
         if (temaSeleccionado) {
             const nuevoEstado = temaSeleccionado.estado === 1 ? -1 : 1;
-
+            const tituloLimpio = removeHtmlTags(temaSeleccionado.titulo);
+            const accion = nuevoEstado === 1 ? 'activó' : 'desactivó';
+    
+            const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el tema con el título: "${tituloLimpio}"`;
+    
             axios
                 .post(`http://localhost:5000/temas/activarDesactivarTema`, {
                     id: temaSeleccionado.idTema,
@@ -77,14 +89,57 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
                 })
                 .then((response) => {
                     if (response.data.en === 1) {
+                        // Registrar el cambio en el historial con el mensaje detallado
+                        registrarCambioHistorial(temaSeleccionado.idTema, mensaje);
+                        
+                        // Actualizar la lista de temas después del cambio
                         cargarTemasGestionar();
-                        cargarTemasGeneral();
+                        
+                        // Si cargarTemasGeneral es una función proporcionada como prop, llamarla
+                        if (typeof cargarTemasGeneral === 'function') {
+                            cargarTemasGeneral();
+                        }
+                        
+                        // Actualizar el tema seleccionado con el nuevo estado
+                        actualizarTemaSeleccionado({...temaSeleccionado, estado: nuevoEstado});
+                        
+                        console.log(mensaje);
+                    } else {
+                        console.log("Hubo un problema al cambiar el estado del tema:", response.data.m);
                     }
                 })
                 .catch((error) => {
                     console.error("Error al cambiar el estado del tema:", error);
                 });
         }
+    };
+
+    const registrarCambioHistorial = (idTema, detalles) => {
+        axios
+            .post(`http://localhost:5000/historial/registrarCambio`, {
+                tipoEntidad: "tema",
+                idTema: idTema,
+                idSubtema: null,
+                idEjercicio: null,
+                idPregunta: null,
+                detalles: detalles,
+                idUsuario: usuarioDetalles.id
+            })
+            .then((response) => {
+                if (response.data.en === 1) {
+                    console.log("Cambio registrado en el historial:", response.data.m);
+                    // Actualizar el estado local del historial
+                    setHistorialCambios(prevHistorial => [...prevHistorial, {
+                        fecha: new Date(),
+                        detalles: detalles
+                    }]);
+                } else {
+                    console.error("Error al registrar el cambio en el historial:", response.data.m);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al registrar el cambio en el historial:", error);
+            });
     };
 
     const removeHtmlTags = (text) => {
@@ -104,7 +159,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
                 <>
                     <Grid item xs={12}>
                         <Typography variant="h4" align="center">Temas</Typography>
-                        <Typography variant="body2">Los temas con fondo color rojo están desactivados</Typography>
+                        <Typography variant="body2">Los temas con fondo color rojo están desactivados.</Typography>
                         <Typography variant="body2">Es necesario seleccionar un tema para editar o para cambiar su estado de activo a inactivo.</Typography>
                     </Grid>
 
@@ -180,6 +235,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
                                 cargarTemasGestionar={cargarTemasGestionar}
                                 cargarTemasGeneral={cargarTemasGeneral}
                                 temaParaEditar={temaSeleccionado}
+                                temas={temas}
                             />
                         </Grid>
                         <Grid item>
@@ -187,12 +243,22 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
                                 variant="contained"
                                 color="error"
                                 disabled={!temaSeleccionado}
-                                onClick={activarDesactivarTema}
+                                onClick={handleActivarDesactivar}
                                 size="small"
                             >
                                 {temaSeleccionado?.estado === 1 ? "Desactivar" : "Activar"}
                             </Button>
                         </Grid>
+                        <ConfirmacionActivarDesactivarContenido
+                            open={showConfirmDialog}
+                            onClose={() => setShowConfirmDialog(false)}
+                            onConfirm={() => {
+                                activarDesactivarTema();
+                                setShowConfirmDialog(false);
+                            }}
+                            itemSeleccionado={temaSeleccionado}
+                            tipoItem="tema"
+                        />
                         <Grid item>
                             <Button
                                 variant="contained"
@@ -208,12 +274,23 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
 
                 </>
             ) : (
-                <Grid item xs={12}>
-                    <Card>
-                        <CardMedia component="img" height="140" image={Imagen} alt="Crear tema" />
-                        <CardContent>
-                            <Typography variant="h5">Da el primer paso: ¡Crea el primer tema!</Typography>
-                            <ModalRegistrarTema cargarTemas={cargarTemasGestionar} temas={temas} />
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card sx={{ width: '80%', maxWidth: '1000px', height: 'auto' }}>
+                        <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Icon
+                                component={AddIcon}
+                                sx={{ fontSize: 100, color: 'primary.main', marginBottom: 2 }}
+                            />
+                            <Typography variant="h5" gutterBottom>
+                                Da el primer paso: ¡Crea el primer tema!
+                            </Typography>
+                            <div style={{ marginTop: '16px' }}>
+                                <ModalRegistrarTema
+                                    cargarTemasGestionar={cargarTemasGestionar}
+                                    cargarTemasGeneral={cargarTemasGeneral}
+                                    temas={temas}
+                                />
+                            </div>
                         </CardContent>
                     </Card>
                 </Grid>

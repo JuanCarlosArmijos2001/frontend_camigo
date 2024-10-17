@@ -42,6 +42,18 @@ function PaginaPrincipal() {
         }),
     }));
 
+    // Nuevo componente styled para el NavBar
+    const NavBarItem = styled(Paper)(({ theme }) => ({
+        backgroundColor: '#3864A6',
+        padding: 0,
+        ...theme.typography.body2,
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+        borderRadius: '3px', // Bordes más redondeados
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', // Sombra más pronunciada
+        overflow: 'hidden', // Asegura que el contenido respete los bordes redondeados
+    }));
+
     const renderContent = () => {
         switch (currentSection) {
             case 'gestionar-contenido':
@@ -58,17 +70,17 @@ function PaginaPrincipal() {
     };
 
     return (
-        <Box sx={{ flexGrow: 1 }} style={{ backgroundColor: 'pink', padding: '5px' }}>
-            <Grid container style={{ backgroundColor: 'blue', padding: '5px' }}>
-                <Grid item xs={12} style={{ backgroundColor: 'yellow', padding: '5px' }}>
-                    <Item style={{ backgroundColor: 'red' }}>
+        <Box sx={{ flexGrow: 1 }}>
+            <Grid container>
+                <Grid item xs={12}>
+                    <NavBarItem>
                         <NavBar
                             onButtonClick={handleButtonClick}
                             onHomeClick={handleHomeClick}
                             currentSection={currentSection}
                         />
-                    </Item>
-                    <Item style={{ backgroundColor: 'green' }}>
+                    </NavBarItem>
+                    <Item>
                         {renderContent()}
                     </Item>
                 </Grid>

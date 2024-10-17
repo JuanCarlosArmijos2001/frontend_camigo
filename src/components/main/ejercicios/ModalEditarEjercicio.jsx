@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
     Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Typography, IconButton, Snackbar,
-    Container, TextField
+    Container, Box
 } from "@mui/material";
+import { styled } from '@mui/system';
 import ReactQuill from "react-quill";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
@@ -12,7 +13,30 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSesionUsuario } from "../../../context/SesionUsuarioContext";
 import { useEjercicioSeleccionado } from "../../../context/EjercicioSeleccionadoContext";
 
-export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEditar }) {
+const CompactPreview = styled(Box)(({ theme }) => ({
+    '& .ql-editor': {
+        padding: theme.spacing(1, 0),
+        margin: 0,
+        '& > *:first-child': {
+            marginTop: 0,
+        },
+        '& > *:last-child': {
+            marginBottom: 0,
+        },
+        '& p, & ul, & ol, & h1, & h2, & h3, & h4, & h5, & h6': {
+            textAlign: 'justify',
+            margin: theme.spacing(1, 0),
+        },
+    },
+    '& > .ql-editor + .ql-editor': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+    },
+}));
+
+
+export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEditar, ejercicios }) {
     const { usuarioDetalles } = useSesionUsuario();
     const { setEjercicioSeleccionado } = useEjercicioSeleccionado();
     const [open, setOpen] = useState(false);
@@ -69,8 +93,18 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
         return doc.body.textContent || "";
     };
 
+    const tituloExistente = (nuevoTitulo) => {
+        const tituloLimpio = cleanHtmlTags(nuevoTitulo).trim().toLowerCase();
+        return ejercicios?.some((ejercicio) =>
+            ejercicio.idEjercicio !== ejercicioParaEditar.idEjercicio &&
+            cleanHtmlTags(ejercicio.titulo).trim().toLowerCase() === tituloLimpio
+        );
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (
             !isQuillContentAvailable(titulo) ||
             !isQuillContentAvailable(instrucciones) ||
@@ -83,11 +117,18 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
             return;
         }
 
+        if (tituloExistente(titulo)) {
+            setSnackbarMessage("El ejercicio ya existe.");
+            setSnackbarColor("error");
+            return;
+        }
+
         try {
             await editarEjercicio();
             setSnackbarMessage("Ejercicio editado con éxito.");
             setSnackbarColor("success");
             handleClose();
+
         } catch (error) {
             console.error("Error al editar el ejercicio:", error);
             setSnackbarMessage("Error al editar el ejercicio.");
@@ -222,11 +263,13 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography variant="h6">Previsualizar</Typography>
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(instrucciones) }} />
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(restricciones) }} />
-                                <pre>{solucion}</pre>
-                                <div dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                                <CompactPreview>
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(titulo) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(instrucciones) }} />
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(restricciones) }} />
+                                    <pre>{solucion}</pre>
+                                    <div className="ql-editor" dangerouslySetInnerHTML={{ __html: cleanEmptyParagraphs(retroalimentacion) }} />
+                                </CompactPreview>
                             </Grid>
                         </Grid>
                     </Container>
@@ -242,7 +285,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
             </Dialog>
             <Snackbar
                 open={Boolean(snackbarMessage)}
-                autoHideDuration={6000}
+                autoHideDuration={2000}
                 onClose={() => setSnackbarMessage("")}
                 message={snackbarMessage}
                 ContentProps={{

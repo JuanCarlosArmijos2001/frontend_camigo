@@ -1,5 +1,5 @@
 // import './App.css'
-import PaginaPrincipal from '../src/components/main/PaginaPrincipal/PaginaPrincipal';
+import PaginaPrincipal from '../src/components/main/paginaPrincipal/PaginaPrincipal';
 import PaginaInicio from './components/paginaInicio/PaginaInicio';
 import { useSesionUsuario } from "../src/context/SesionUsuarioContext";
 import { TemaSeleccionadoContextProvider } from "../src/context/TemaSeleccionadoContext";
