@@ -208,7 +208,7 @@ export default function PaginaInicio() {
                                     width: '100%',
                                 }}>
                                     <iframe
-                                        src="https://www.youtube.com/embed/wyf7Oheb62Q"
+                                        src="https://www.youtube.com/embed/jNPbJJF8ivI"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
                                         style={{

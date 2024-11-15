@@ -337,10 +337,9 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
         }
     };
 
-
     const renderPregunta = () => {
         const opciones = ['a', 'b', 'c', 'd'];
-
+    
         if (preguntaSeleccionado.estado_completado === 1) {
             return (
                 <>
@@ -368,7 +367,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
                 </>
             );
         }
-
+    
         return (
             <>
                 <Box sx={titleStyle}>
@@ -377,7 +376,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
                 <Typography variant="h6" sx={{ color: '#3864A6', fontWeight: 'bold', textAlign: 'left' }}>
                     Selecciona la respuesta correcta:
                 </Typography>
-
+    
                 <FormControl component="fieldset" sx={{ width: '100%' }}>
                     <RadioGroup
                         aria-label="pregunta"
@@ -392,10 +391,16 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
                                 control={<Radio />}
                                 label={renderContent(preguntaSeleccionado[`opcion_${opcion}`])}
                                 sx={{
-                                    alignItems: 'flex-start',
+                                    margin: '8px 0',
+                                    alignItems: 'center',
                                     '& .MuiFormControlLabel-label': {
-                                        textAlign: 'left',
-                                        marginTop: '-9px'
+                                        width: '100%',
+                                        paddingTop: '2px',
+                                        fontFamily: 'inherit'
+                                    },
+                                    '& .MuiRadio-root': {
+                                        padding: '8px',
+                                        marginRight: '8px'
                                     }
                                 }}
                             />
