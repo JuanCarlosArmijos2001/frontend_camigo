@@ -243,6 +243,7 @@ import RegistrarEstudiante from './RegistrarEstudiante';
 import LogoCamigoCarrera from '../../assets/images/logoCamigoCarrera.svg';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import keycloak from '../../config/keycloak';
 
 function Copyright(props) {
     return (
@@ -266,9 +267,10 @@ export default function IniciarSesion() {
     const [error, setError] = useState(null);
     const [mostrarRegistro, setMostrarRegistro] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [keycloak, setKeycloak] = useState(null); // Estado para Keycloak
+    // const [keycloak, setKeycloak] = useState(null); // Estado para Keycloak
     const [authenticated, setAuthenticated] = useState(false); // Estado de autenticación
     const [userInfo, setUserInfo] = useState(null); // Estado de información del usuario
+    const [userInfoAerobase, setUserInfoAerobase] = useState(null);
 
     // Función para iniciar sesión con API tradicional (la que ya tienes)
     const handleIniciarSesionTradicional = async (e) => {
@@ -314,32 +316,59 @@ export default function IniciarSesion() {
         }
     };
 
-    // Función para iniciar sesión con Keycloak (IAM Aerobase)
-    const handleIniciarSesionIAM = () => {
-        // Inicializa Keycloak solo cuando el usuario haga clic en el botón
-        const keycloakInstance = new Keycloak({
-            url: 'http://localhost:8080/auth', // URL del servidor Keycloak
-            realm: 'master', // Nombre del realm configurado en Keycloak
-            clientId: 'juanCar2080', // ID del cliente registrado en Keycloak
-        });
-
-        keycloakInstance.init({ onLoad: 'login-required' }).then((authenticated) => {
-            setKeycloak(keycloakInstance);
-            setAuthenticated(authenticated);
-
-            if (authenticated) {
-                keycloakInstance.loadUserProfile().then(profile => {
-                    setUserInfo(profile);
-                }).catch(error => {
-                    console.error('Error al cargar el perfil del usuario:', error);
-                });
-            } else {
-                console.error('No autenticado');
-            }
-        }).catch((error) => {
-            console.error('Error al inicializar Keycloak:', error);
+    
+    
+    const handleIniciarSesionKeycloak = async (e) => {
+        e.preventDefault();
+        console.log(")))))))))))))))))))))))))))))))))))))))))))))");
+        console.log("keycloak")
+        console.log(keycloak)
+        keycloak.init({ onLoad: "login-required" }).then((authenticated) => {
+        if (authenticated) {
+            console.log("Usuario autenticado:", keycloak.token);
+            const user = {
+            username: keycloak.tokenParsed?.preferred_username,
+            email: keycloak.tokenParsed?.email,
+            rol: keycloak.tokenParsed?.rol,
+            };
+            console.log(user)
+            console.log(keycloak.tokenParsed)
+            setUserInfoAerobase(user); // Actualiza el estado con la información del usuario
+            console.log("##########################################")
+            console.log(user)
+            console.log(userInfoAerobase)
+        } else {
+            keycloak.login(); // Redirige a la página de inicio de sesión
+        }
         });
     };
+
+    // // Función para iniciar sesión con Keycloak (IAM Aerobase)
+    // const handleIniciarSesionIAM = () => {
+    //     // Inicializa Keycloak solo cuando el usuario haga clic en el botón
+    //     const keycloakInstance = new Keycloak({
+    //         url: 'http://localhost:8080/auth', // URL del servidor Keycloak
+    //         realm: 'master', // Nombre del realm configurado en Keycloak
+    //         clientId: 'juanCar2080', // ID del cliente registrado en Keycloak
+    //     });
+
+    //     keycloakInstance.init({ onLoad: 'login-required' }).then((authenticated) => {
+    //         setKeycloak(keycloakInstance);
+    //         setAuthenticated(authenticated);
+
+    //         if (authenticated) {
+    //             keycloakInstance.loadUserProfile().then(profile => {
+    //                 setUserInfo(profile);
+    //             }).catch(error => {
+    //                 console.error('Error al cargar el perfil del usuario:', error);
+    //             });
+    //         } else {
+    //             console.error('No autenticado');
+    //         }
+    //     }).catch((error) => {
+    //         console.error('Error al inicializar Keycloak:', error);
+    //     });
+    // };
 
     const validarFormatoEmail = (correo) => {
         const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -430,11 +459,11 @@ export default function IniciarSesion() {
                                 <Button
                                     fullWidth
                                     variant="contained"
-                                    color="success"
+                                    color="failed"
                                     sx={{ mt: 3, mb: 2 }}
-                                    onClick={handleIniciarSesionIAM}
+                                    onClick={handleIniciarSesionKeycloak}
                                 >
-                                    Iniciar sesión con IAM Computación
+                                    Iniciar sesión con Keycloak
                                 </Button>
 
                                 <Grid container>
