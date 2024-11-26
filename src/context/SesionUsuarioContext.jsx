@@ -7,8 +7,8 @@ const SesionUsuarioContext = createContext();
 export const SesionUsuarioContextProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [usuarioDetalles, setUsuarioDetalles] = useState(null);
-    
 
+    
     useEffect(() => {
         obtenerTokenLocalStorage();
         verificarTiempoExpiracion();

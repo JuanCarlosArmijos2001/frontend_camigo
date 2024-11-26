@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Button, Typography, Box, IconButton, Grid} from '@mui/material';
+import { AppBar, Toolbar, Button, Typography, Box, IconButton, Grid } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import EditIcon from '@mui/icons-material/Edit';
 import { useSesionUsuario } from '../../../context/SesionUsuarioContext';
+import { useSesionKeycloak } from '../../../context/SesionKeycloakContext';
 import logo from '../../../assets/images/logo Camigo.jpeg';
 import { useTemaSeleccionado } from '../../../context/TemaSeleccionadoContext';
 import { useSubtemaSeleccionado } from '../../../context/SubtemaSeleccionadoContext';
@@ -21,6 +22,8 @@ function NavBar({ onButtonClick, onHomeClick, currentSection }) {
     const { setPreguntaSeleccionado } = usePreguntaSeleccionado();
     const [modalEditarUsuarioAbierto, setModalEditarUsuarioAbierto] = useState(false);
     const [periodoActual, setPeriodoActual] = useState(null);
+    const { usuarioDetallesKeycloak, cerrarSesionKeycloak, isAuthenticated } = useSesionKeycloak();
+    const isKeycloakUser = isAuthenticated && usuarioDetallesKeycloak;
 
     useEffect(() => {
         obtenerPeriodoActual();
@@ -47,7 +50,13 @@ function NavBar({ onButtonClick, onHomeClick, currentSection }) {
         setSubtemaSeleccionado(null);
         setEjercicioSeleccionado(null);
         setPreguntaSeleccionado(null);
-        cerrarSesion();
+
+        if (isKeycloakUser) {
+            cerrarSesionKeycloak();
+        } else {
+            cerrarSesion();
+        }
+        // cerrarSesion();
     };
 
     const abrirModalEditarUsuario = () => {
