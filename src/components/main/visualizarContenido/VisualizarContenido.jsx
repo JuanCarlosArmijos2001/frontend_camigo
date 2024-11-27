@@ -18,32 +18,47 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const obtenerProgresoUsuario = (usuarioDetalles, setProgresoUsuario) => {
+    // Verificación adicional antes de hacer la solicitud
+    if (!usuarioDetalles || !usuarioDetalles.id) {
+        console.error("Detalles de usuario no válidos");
+        setProgresoUsuario(0);
+        return;
+    }
+
     const parametros = {
         idUsuario: usuarioDetalles.id
     };
 
     axios.post(`http://localhost:5000/usuario/progresoUsuario`, parametros)
         .then((response) => {
-            if (response.data.en === 1) {
-                setProgresoUsuario(response.data.progreso);
-                console.log("Progreso del usuario:", response.data.progreso);
+            // Verificaciones más robustas de la respuesta
+            if (response.data && response.data.en === 1 && response.data.progreso !== undefined) {
+                // Asegurar que el progreso esté entre 0 y 100
+                const progreso = Math.max(0, Math.min(100, response.data.progreso));
+                setProgresoUsuario(progreso);
+                console.log("Progreso del usuario:", progreso);
             } else {
-                console.log("No se encontró el progreso del usuario");
+                console.warn("Respuesta inesperada al obtener progreso:", response.data);
+                setProgresoUsuario(0);
             }
         })
         .catch((error) => {
             console.error("Error al obtener el progreso del usuario:", error);
+            setProgresoUsuario(0);
         });
 };
 
 function VisualizarContenido() {
     const { usuarioDetalles } = useSesionUsuario();
-    const [progresoUsuario, setProgresoUsuario] = useState(-1);
-    console.log("PROGRESO EN PADRE", progresoUsuario);
+    // Cambia el estado inicial a 0
+    const [progresoUsuario, setProgresoUsuario] = useState(0);
     const tipoUsuario = usuarioDetalles?.detallesRol?.tipo || '';
 
     useEffect(() => {
-        obtenerProgresoUsuario(usuarioDetalles, setProgresoUsuario);
+        // Solo intentar obtener progreso si hay detalles de usuario
+        if (usuarioDetalles && usuarioDetalles.id) {
+            obtenerProgresoUsuario(usuarioDetalles, setProgresoUsuario);
+        }
     }, [usuarioDetalles]);
 
     return (
@@ -80,5 +95,4 @@ function VisualizarContenido() {
         </Box>
     );
 }
-
 export default VisualizarContenido;

@@ -178,6 +178,23 @@ const ModalEditarUsuario = ({ open, onClose }) => {
         <>
             <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
                 <DialogTitle>Editar Usuario</DialogTitle>
+                <Alert
+                    severity="info"
+                    sx={{
+                        mb: 2,
+                        textAlign: 'justify',
+                        borderRadius: 2,
+                        '& .MuiAlert-message': {
+                            width: '100%'
+                        }
+                    }}
+                >
+                    <Typography variant="body2">
+                        Si ha iniciado sesión con credenciales del IAM de Computación,
+                        le recomendamos modificar sus datos directamente en ese sistema
+                        para evitar conflictos o discrepancias entre plataformas.
+                    </Typography>
+                </Alert>
                 <DialogContent>
                     <Box component="form" noValidate sx={{ mt: 1 }}>
                         <TextField
