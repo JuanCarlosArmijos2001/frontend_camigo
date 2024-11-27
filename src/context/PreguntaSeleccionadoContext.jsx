@@ -9,8 +9,8 @@ export const PreguntaSeleccionadoContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log("Pregunta seleccionada en el contexto")
-        console.log(preguntaSeleccionado);
+        // console.log("Pregunta seleccionada en el contexto")
+        // console.log(preguntaSeleccionado);
     }, [preguntaSeleccionado]);
 
     return (

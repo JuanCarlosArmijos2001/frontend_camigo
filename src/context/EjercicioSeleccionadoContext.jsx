@@ -9,8 +9,8 @@ export const EjercicioSeleccionadoContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log("Ejercicio seleccionado en el contexto")
-        console.log(ejercicioSeleccionado);
+        // console.log("Ejercicio seleccionado en el contexto")
+        // console.log(ejercicioSeleccionado);
     }, [ejercicioSeleccionado]);
 
     return (

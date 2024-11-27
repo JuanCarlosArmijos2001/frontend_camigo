@@ -24,19 +24,19 @@ const ListarContenido = ({ progresoUsuario }) => {
     const { preguntaSeleccionado, setPreguntaSeleccionado } = usePreguntaSeleccionado();
 
     useEffect(() => {
-        console.log("====================================");
-        console.log("Useffect de ListarContenido");
+        // console.log("====================================");
+        // console.log("Useffect de ListarContenido");
         if (usuarioDetalles && validarContenidoPrincipal) {
             cargarTemas();
             setValidarContenidoPrincipal(false);
-            console.log("Se cargaron los temas");
+            // console.log("Se cargaron los temas");
         } else if (preguntaSeleccionado) {
             cargarPreguntas(ejercicioSeleccionado);
-            console.log("Se cargaron las preguntas");
+            // console.log("Se cargaron las preguntas");
         }
     }, [usuarioDetalles, preguntaSeleccionado]);
 
-    console.log("PROGRESO", progresoUsuario);
+    // console.log("PROGRESO", progresoUsuario);
 
     const cargarTemas = () => {
         const parametros = {

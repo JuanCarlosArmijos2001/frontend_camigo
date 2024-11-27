@@ -9,8 +9,8 @@ export const TemaSeleccionadoContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log("Tema seleccionado en el contexto")
-        console.log(temaSeleccionado);
+        // console.log("Tema seleccionado en el contexto")
+        // console.log(temaSeleccionado);
     }, [temaSeleccionado]);
 
     return (

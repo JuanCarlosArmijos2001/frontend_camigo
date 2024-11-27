@@ -340,7 +340,7 @@ export const SesionKeycloakContextProvider = ({ children }) => {
             if (en === 1) {
                 setUsuarioDetallesKeycloak({ idUsuario, progreso, detallesPersona, detallesCuenta, detallesRol });
                 localStorage.setItem("usuarioDetallesKeycloak", JSON.stringify({ idUsuario, progreso, detallesPersona, detallesCuenta, detallesRol }));
-                console.log('Detalles del usuario obtenidos correctamente:', idUsuario, progreso, detallesPersona, detallesCuenta, detallesRol);
+                // console.log('Detalles del usuario obtenidos correctamente:', idUsuario, progreso, detallesPersona, detallesCuenta, detallesRol);
             } else {
                 console.error('Error al obtener detalles del usuario:', m);
             }

@@ -36,7 +36,7 @@ const obtenerProgresoUsuario = (usuarioDetalles, setProgresoUsuario) => {
                 // Asegurar que el progreso esté entre 0 y 100
                 const progreso = Math.max(0, Math.min(100, response.data.progreso));
                 setProgresoUsuario(progreso);
-                console.log("Progreso del usuario:", progreso);
+                // console.log("Progreso del usuario:", progreso);
             } else {
                 console.warn("Respuesta inesperada al obtener progreso:", response.data);
                 setProgresoUsuario(0);

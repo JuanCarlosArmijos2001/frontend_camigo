@@ -97,7 +97,7 @@ const Administracion = () => {
         try {
             const response = await axios.post(`http://localhost:5000/periodoAcademico/listarPeriodosAcademicosAnteriores`);
             const periodos = response.data.periodos;
-            console.log('PERIODOS ACADEMICOS:', periodos);
+            // console.log('PERIODOS ACADEMICOS:', periodos);
             setPeriodosAcademicos(periodos);
         } catch (error) {
             console.error('Error al obtener periodos académicos:', error);

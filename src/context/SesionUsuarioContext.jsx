@@ -15,7 +15,7 @@ export const SesionUsuarioContextProvider = ({ children }) => {
         // Establecer un temporizador para verificar periódicamente
         const intervalId = setInterval(() => {
             verificarTiempoExpiracion();
-            console.log("Verificando el tiempo de expiración del token...");
+            // console.log("Verificando el tiempo de expiración del token...");
         }, 10000); // Verificar cada 10 segundos (ajusta el intervalo según tus necesidades)
 
         // Limpiar el temporizador al desmontar el componente
@@ -55,8 +55,8 @@ export const SesionUsuarioContextProvider = ({ children }) => {
                 const expDate = new Date(decodedToken.exp * 1000).toLocaleString();
 
                 // Mostramos las fechas formateadas
-                console.log("Tiempo de emisión:", iatDate);
-                console.log("Tiempo de expiración:", expDate);
+                // console.log("Tiempo de emisión:", iatDate);
+                // console.log("Tiempo de expiración:", expDate);
 
                 if (decodedToken.exp * 1000 < Date.now()) {
                     console.log("El token ha expirado, inicia sesión nuevamente.");
@@ -106,7 +106,7 @@ export const SesionUsuarioContextProvider = ({ children }) => {
 
             if (en === 1) {
                 setUsuarioDetalles({ id, progreso, detallesPersona, detallesCuenta, detallesRol });
-                console.log('Detalles del usuario obtenidos correctamente:', id, progreso, detallesPersona, detallesCuenta, detallesRol);
+                // console.log('Detalles del usuario obtenidos correctamente:', id, progreso, detallesPersona, detallesCuenta, detallesRol);
             } else {
                 console.error('Error al obtener detalles del usuario:', m);
             }

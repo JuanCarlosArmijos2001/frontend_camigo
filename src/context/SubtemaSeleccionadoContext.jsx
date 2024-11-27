@@ -9,8 +9,8 @@ export const SubtemaSeleccionadoContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log("Subtema seleccionado en el contexto")
-        console.log(subtemaSeleccionado);
+        // console.log("Subtema seleccionado en el contexto")
+        // console.log(subtemaSeleccionado);
     }, [subtemaSeleccionado]);
 
     return (

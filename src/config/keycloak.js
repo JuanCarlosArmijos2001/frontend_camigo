@@ -9,7 +9,7 @@ const keycloakConfig = {
 
 
 const keycloak = new Keycloak(keycloakConfig);
-console.log("DATOS DE KEYCLOAK")
-console.log(keycloak)
+// console.log("DATOS DE KEYCLOAK")
+// console.log(keycloak)
 
 export default keycloak;
