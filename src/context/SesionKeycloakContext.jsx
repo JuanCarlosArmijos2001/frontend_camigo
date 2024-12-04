@@ -96,7 +96,7 @@
 
 //         try {
 //             const response = await axios.post(
-//                 `http://localhost:5000/sesionUsuarioKeycloak/registrarUsuarioAerobaseComoUsuarioExterno`,
+//                 `${HOST}/sesionUsuarioKeycloak/registrarUsuarioAerobaseComoUsuarioExterno`,
 //                 { nombres, apellidos, email, tipoRol },
 //                 {
 //                     headers: {
@@ -122,7 +122,7 @@
 //     const obtenerDetallesUsuarioAerobase = async (userId) => {
 //         try {
 //             const response = await axios.post(
-//                 `http://localhost:5000/sesionUsuarioKeycloak/obtenerDetallesUsuarioAerobase`,
+//                 `${HOST}/sesionUsuarioKeycloak/obtenerDetallesUsuarioAerobase`,
 //                 { userId },
 //                 {
 //                     headers: {
@@ -151,7 +151,7 @@
 //         console.log("TIPOROL ", tipoRol)
 //         try {
 //             const response = await axios.post(
-//                 `http://localhost:5000/sesionUsuarioKeycloak/comprobarExistenciaDeUsuarioInternoComoUsuarioInterno`,
+//                 `${HOST}/sesionUsuarioKeycloak/comprobarExistenciaDeUsuarioInternoComoUsuarioInterno`,
 //                 { email },
 //                 {
 //                     headers: {
@@ -213,6 +213,7 @@ export const SesionKeycloakContextProvider = ({ children }) => {
     const [usuarioDetallesKeycloak, setUsuarioDetallesKeycloak] = useState(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const [tokenKeycloak, setTokenKeycloak] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const initKeycloak = async () => {
@@ -223,7 +224,8 @@ export const SesionKeycloakContextProvider = ({ children }) => {
                     checkLoginIframe: false,
                     pkceMethod: 'S256'
                 });
-
+                console.log("--------OBJETO DE KEYCLOAK---------");
+                console.log(authenticated);
                 if (authenticated) {
                     const token = keycloak.token;
                     const user = {
@@ -300,7 +302,7 @@ export const SesionKeycloakContextProvider = ({ children }) => {
     const registrarUsuarioAerobaseComoUsuarioExterno = async (nombres, apellidos, email, tipoRol) => {
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuarioKeycloak/registrarUsuarioAerobaseComoUsuarioExterno`,
+                `${HOST}/sesionUsuarioKeycloak/registrarUsuarioAerobaseComoUsuarioExterno`,
                 { nombres, apellidos, email, tipoRol },
                 {
                     headers: {
@@ -325,7 +327,7 @@ export const SesionKeycloakContextProvider = ({ children }) => {
     const obtenerDetallesUsuarioAerobase = async (userId) => {
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuarioKeycloak/obtenerDetallesUsuarioAerobase`,
+                `${HOST}/sesionUsuarioKeycloak/obtenerDetallesUsuarioAerobase`,
                 { userId },
                 {
                     headers: {
@@ -352,7 +354,7 @@ export const SesionKeycloakContextProvider = ({ children }) => {
     const comprobarExistenciaDeUsuarioInternoComoUsuarioInterno = async (nombres, apellidos, email, tipoRol) => {
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuarioKeycloak/comprobarExistenciaDeUsuarioInternoComoUsuarioInterno`,
+                `${HOST}/sesionUsuarioKeycloak/comprobarExistenciaDeUsuarioInternoComoUsuarioInterno`,
                 { email },
                 {
                     headers: {

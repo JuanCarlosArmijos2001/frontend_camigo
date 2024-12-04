@@ -80,6 +80,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
     const handleOpcion_c_Change = (value) => setOpcion_c(value);
     const handleOpcion_d_Change = (value) => setOpcion_d(value);
     const handleJustificacionChange = (value) => setJustificacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -164,7 +165,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
         };
 
         const response = await axios.post(
-            `http://localhost:5000/preguntas/editarPregunta`,
+            `${HOST}/preguntas/editarPregunta`,
             datosFormulario,
             {
                 headers: {
@@ -183,7 +184,7 @@ export default function ModalEditarPregunta({ cargarPreguntas, preguntaParaEdita
             const mensaje = `Se editó la pregunta con el enunciado: "${cleanHtmlTags(enunciado)}"`;
 
             const usuarioId = usuarioDetalles.id;
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "pregunta",
                 idPregunta: preguntaParaEditar.idPregunta,
                 detalles: mensaje,

@@ -22,6 +22,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         cargarTemasGestionar();
@@ -34,7 +35,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
         };
 
         axios
-            .post(`http://localhost:5000/temas/listarTemas`, parametros)
+            .post(`${HOST}/temas/listarTemas`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     setTemas(response.data.temas);
@@ -50,7 +51,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
     const cargarHistorialCambios = () => {
         if (temaSeleccionado) {
             axios
-                .post(`http://localhost:5000/historial/listarCambios`, {
+                .post(`${HOST}/historial/listarCambios`, {
                     idEntidad: temaSeleccionado.idTema,
                     tipoEntidad: "tema",
                 })
@@ -83,7 +84,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el tema con el título: "${tituloLimpio}"`;
     
             axios
-                .post(`http://localhost:5000/temas/activarDesactivarTema`, {
+                .post(`${HOST}/temas/activarDesactivarTema`, {
                     id: temaSeleccionado.idTema,
                     estado: nuevoEstado,
                 })
@@ -116,7 +117,7 @@ const GestionarTemas = ({ cargarTemasGeneral }) => {
 
     const registrarCambioHistorial = (idTema, detalles) => {
         axios
-            .post(`http://localhost:5000/historial/registrarCambio`, {
+            .post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "tema",
                 idTema: idTema,
                 idSubtema: null,

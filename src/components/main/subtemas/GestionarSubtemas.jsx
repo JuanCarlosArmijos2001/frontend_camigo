@@ -27,6 +27,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (temaSeleccionado) {
@@ -44,7 +45,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
         };
 
         axios
-            .post(`http://localhost:5000/subtemas/listarSubtemas`, parametros)
+            .post(`${HOST}/subtemas/listarSubtemas`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     setSubtemas(response.data.subtemas);
@@ -62,7 +63,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
     const cargarHistorialCambios = () => {
         if (subtemaSeleccionado) {
             axios
-                .post(`http://localhost:5000/historial/listarCambios`, {
+                .post(`${HOST}/historial/listarCambios`, {
                     idEntidad: subtemaSeleccionado.idSubtema,
                     tipoEntidad: "subtema",
                 })
@@ -91,7 +92,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
     //         const nuevoEstado = subtemaSeleccionado.estado === 1 ? -1 : 1;
 
     //         axios
-    //             .post(`http://localhost:5000/subtemas/activarDesactivarSubtema`, {
+    //             .post(`${HOST}/subtemas/activarDesactivarSubtema`, {
     //                 id: subtemaSeleccionado.idSubtema,
     //                 estado: nuevoEstado,
     //             })
@@ -116,7 +117,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el subtema con el título: "${tituloLimpio}"`;
     
             axios
-                .post(`http://localhost:5000/subtemas/activarDesactivarSubtema`, {
+                .post(`${HOST}/subtemas/activarDesactivarSubtema`, {
                     id: subtemaSeleccionado.idSubtema,
                     estado: nuevoEstado,
                 })
@@ -149,7 +150,7 @@ const GestionarSubtemas = ({ cargarSubtemasGeneral }) => {
 
     const registrarCambioHistorial = (idSubtema, detalles) => {
         axios
-            .post(`http://localhost:5000/historial/registrarCambio`, {
+            .post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "subtema",
                 idTema: temaSeleccionado.idTema,
                 idSubtema: idSubtema,

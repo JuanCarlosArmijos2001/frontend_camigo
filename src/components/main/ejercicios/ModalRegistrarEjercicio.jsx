@@ -60,6 +60,7 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
     const handleRestriccionesChange = (value) => setRestricciones(value);
     const handleSolucionChange = (value) => setSolucion(value);
     const handleRetroalimentacionChange = (value) => setRetroalimentacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -127,7 +128,7 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
         };
 
         const response = await axios.post(
-            `http://localhost:5000/ejercicios/registrarEjercicio`,
+            `${HOST}/ejercicios/registrarEjercicio`,
             datosFormulario,
             {
                 headers: {
@@ -141,7 +142,7 @@ export default function ModalRegistrarEjercicio({ cargarEjercicios, ejercicios }
             const nuevoEjercicioId = response.data.idEjercicio;
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el ejercicio con el título: "${cleanHtmlTags(titulo)}"`;
 
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "ejercicio",
                 idEjercicio: nuevoEjercicioId,
                 detalles: mensaje,

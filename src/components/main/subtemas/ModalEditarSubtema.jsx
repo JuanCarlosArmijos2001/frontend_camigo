@@ -68,6 +68,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar, 
     const handleEjemploCodigoChange = (value) => setEjemploCodigo(value);
     const handleRecursosChange = (value) => setRecursos(value);
     const handleRetroalimentacionChange = (value) => setRetroalimentacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -140,7 +141,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar, 
     //         };
 
     //         const response = await axios.post(
-    //             `http://localhost:5000/subtemas/editarSubtema`,
+    //             `${HOST}/subtemas/editarSubtema`,
     //             datosFormulario,
     //             {
     //                 headers: {
@@ -218,7 +219,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar, 
             };
     
             const response = await axios.post(
-                `http://localhost:5000/subtemas/editarSubtema`,
+                `${HOST}/subtemas/editarSubtema`,
                 datosFormulario,
                 {
                     headers: {
@@ -244,7 +245,7 @@ export default function ModalEditarSubtema({ cargarSubtemas, subtemaParaEditar, 
                 // Agregar registro al historial
                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el subtema con el título: "${cleanHtmlTags(titulo)}"`;
     
-                await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+                await axios.post(`${HOST}/historial/registrarCambio`, {
                     tipoEntidad: "subtema",
                     idSubtema: subtemaParaEditar.idSubtema,
                     detalles: mensaje,

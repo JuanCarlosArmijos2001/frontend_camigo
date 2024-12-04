@@ -29,6 +29,7 @@ const ModalEditarUsuario = ({ open, onClose }) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("error");
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (usuarioDetalles) {
@@ -64,7 +65,7 @@ const ModalEditarUsuario = ({ open, onClose }) => {
     const validarClaveActual = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/validarClave`,
+                `${HOST}/sesionUsuario/validarClave`,
                 {
                     userId: usuarioDetalles.id,
                     claveActual: nuevosDatos.claveActual
@@ -129,7 +130,7 @@ const ModalEditarUsuario = ({ open, onClose }) => {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/editarUsuario`,
+                `${HOST}/sesionUsuario/editarUsuario`,
                 datosActualizados,
                 {
                     headers: {

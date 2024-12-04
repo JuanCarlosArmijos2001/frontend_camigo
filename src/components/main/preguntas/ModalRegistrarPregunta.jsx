@@ -62,6 +62,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
     const handleOpcion_d_Change = (value) => setOpcion_d(value);
     const handleRespuesta_correcta_Change = (value) => setRespuesta_correcta(value);
     const handleJustificacionChange = (value) => setJustificacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -144,7 +145,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
         };
 
         const response = await axios.post(
-            `http://localhost:5000/preguntas/registrarPregunta`,
+            `${HOST}/preguntas/registrarPregunta`,
             datosFormulario,
             {
                 headers: {
@@ -158,7 +159,7 @@ export default function ModalRegistrarPreguntas({ cargarPreguntas, preguntas }) 
             const nuevaPreguntaId = response.data.idPregunta;
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó la pregunta con el enunciado: "${cleanHtmlTags(enunciado)}"`;
 
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "pregunta",
                 idPregunta: nuevaPreguntaId,
                 detalles: mensaje,

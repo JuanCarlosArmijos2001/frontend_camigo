@@ -28,8 +28,9 @@ const obtenerProgresoUsuario = (usuarioDetalles, setProgresoUsuario) => {
     const parametros = {
         idUsuario: usuarioDetalles.id
     };
+    const HOST = import.meta.env.VITE_HOST;
 
-    axios.post(`http://localhost:5000/usuario/progresoUsuario`, parametros)
+    axios.post(`${HOST}/usuario/progresoUsuario`, parametros)
         .then((response) => {
             // Verificaciones más robustas de la respuesta
             if (response.data && response.data.en === 1 && response.data.progreso !== undefined) {

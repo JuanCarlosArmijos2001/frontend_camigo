@@ -86,7 +86,7 @@
 //         try {
 //             const usuarioConExternalId = { ...usuario, external_id: usuario.externalId };
 //             const response = await axios.post(
-//                 `http://localhost:5000/sesionUsuario/registro`,
+//                 `${HOST}/sesionUsuario/registro`,
 //                 usuarioConExternalId,
 //                 {
 //                     headers: {
@@ -263,6 +263,7 @@ function RegistrarEstudiante() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('error');
+    const HOST = import.meta.env.VITE_HOST;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -331,7 +332,7 @@ function RegistrarEstudiante() {
         try {
             const usuarioConExternalId = { ...usuario, external_id: usuario.externalId };
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/registro`,
+                `${HOST}/sesionUsuario/registro`,
                 usuarioConExternalId,
                 {
                     headers: {

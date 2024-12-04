@@ -7,6 +7,7 @@ const SesionUsuarioContext = createContext();
 export const SesionUsuarioContextProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [usuarioDetalles, setUsuarioDetalles] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     
     useEffect(() => {
@@ -92,7 +93,7 @@ export const SesionUsuarioContextProvider = ({ children }) => {
     const obtenerDetallesUsuario = async (userId) => {
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/detalleSesion`,
+                `${HOST}/sesionUsuario/detalleSesion`,
                 { userId },
                 {
                     headers: {

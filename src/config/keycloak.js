@@ -1,6 +1,6 @@
 import Keycloak from 'keycloak-js';
 
-
+const HOST = import.meta.env.VITE_HOST;
 const keycloakConfig = {
     url: 'http://localhost/auth',
     realm: 'aerobase',
@@ -9,7 +9,7 @@ const keycloakConfig = {
 
 
 const keycloak = new Keycloak(keycloakConfig);
-// console.log("DATOS DE KEYCLOAK")
-// console.log(keycloak)
+console.log("DATOS DE KEYCLOAK")
+console.log(keycloak)
 
 export default keycloak;

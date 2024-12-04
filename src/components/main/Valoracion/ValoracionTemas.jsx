@@ -14,11 +14,12 @@ export default function ValoracionTemas() {
     const [error, setError] = useState(null);
     const theme = useTheme();
     const { usuarioDetalles } = useSesionUsuario();
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/valoracion/topTemas');
+                const response = await axios.get(`${HOST}/valoracion/topTemas`);
                 if (response.data.en === 1) {
                     const formattedData = response.data.temas.map((tema, index) => ({
                         name: `${index + 1}°`,

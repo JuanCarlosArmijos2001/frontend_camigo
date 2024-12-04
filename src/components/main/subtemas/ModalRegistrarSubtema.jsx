@@ -61,6 +61,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
     const handleEjemploCodigoChange = (value) => setEjemploCodigo(value);
     const handleRecursosChange = (value) => setRecursos(value);
     const handleRetroalimentacionChange = (value) => setRetroalimentacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -142,7 +143,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
         };
 
         const response = await axios.post(
-            `http://localhost:5000/subtemas/registrarSubtema`,
+            `${HOST}/subtemas/registrarSubtema`,
             datosFormulario,
             {
                 headers: {
@@ -156,7 +157,7 @@ export default function ModalRegistrarSubtema({ cargarSubtemas, subtemas }) {
             const nuevoSubtemaId = response.data.idSubtema;
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el subtema con el título: "${cleanHtmlTags(titulo)}"`;
 
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "subtema",
                 idSubtema: nuevoSubtemaId,
                 detalles: mensaje,

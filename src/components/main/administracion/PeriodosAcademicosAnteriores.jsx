@@ -37,11 +37,12 @@ const PeriodosAcademicosAnteriores = ({ periodosAcademicos, onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     const obtenerResumenProgreso = async (idPeriodoAcademico) => {
         setIsLoading(true);
         try {
-            const response = await axios.post(`http://localhost:5000/periodoAcademico/resumenProgresoUsuarios`, { idPeriodoAcademico });
+            const response = await axios.post(`${HOST}/periodoAcademico/resumenProgresoUsuarios`, { idPeriodoAcademico });
             setResumenProgreso(response.data.resumen);
         } catch (error) {
             console.error('Error al obtener el resumen de progreso:', error);

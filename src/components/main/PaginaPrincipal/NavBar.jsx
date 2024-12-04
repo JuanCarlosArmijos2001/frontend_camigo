@@ -24,6 +24,7 @@ function NavBar({ onButtonClick, onHomeClick, currentSection }) {
     const [periodoActual, setPeriodoActual] = useState(null);
     const { usuarioDetallesKeycloak, cerrarSesionKeycloak, isAuthenticated } = useSesionKeycloak();
     const isKeycloakUser = isAuthenticated && usuarioDetallesKeycloak;
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         obtenerPeriodoActual();
@@ -69,7 +70,7 @@ function NavBar({ onButtonClick, onHomeClick, currentSection }) {
 
     const obtenerPeriodoActual = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/periodoAcademico/periodoAcademicoActual`);
+            const response = await axios.get(`${HOST}/periodoAcademico/periodoAcademicoActual`);
             setPeriodoActual(response.data.periodoActual);
         } catch (error) {
             console.error('Error al obtener el periodo académico actual:', error);

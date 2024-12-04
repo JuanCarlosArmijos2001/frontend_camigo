@@ -23,6 +23,7 @@ const GestionarPreguntas = () => {
     const [showHistorialModal, setShowHistorialModal] = useState(false);
     const { usuarioDetalles } = useSesionUsuario();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (ejercicioSeleccionado) {
@@ -31,7 +32,7 @@ const GestionarPreguntas = () => {
     }, [ejercicioSeleccionado]);
 
     const cargarPreguntas = () => {
-        axios.post(`http://localhost:5000/preguntas/listarPreguntas`, {
+        axios.post(`${HOST}/preguntas/listarPreguntas`, {
             idEjercicio: ejercicioSeleccionado.idEjercicio,
             idUsuario: usuarioDetalles.id,
             mensaje: "preguntas",
@@ -64,7 +65,7 @@ const GestionarPreguntas = () => {
     
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} la pregunta: "${tituloLimpio}"`;
     
-            axios.post(`http://localhost:5000/preguntas/activarDesactivarPregunta`, {
+            axios.post(`${HOST}/preguntas/activarDesactivarPregunta`, {
                 id: preguntaSeleccionado.idPregunta,
                 estado: nuevoEstado,
             })
@@ -92,7 +93,7 @@ const GestionarPreguntas = () => {
 
     const registrarCambioHistorial = (idPregunta, detalles) => {
         axios
-            .post(`http://localhost:5000/historial/registrarCambio`, {
+            .post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "pregunta",
                 idTema: null,
                 idSubtema: null,
@@ -136,7 +137,7 @@ const GestionarPreguntas = () => {
 
     const cargarHistorialCambios = () => {
         if (preguntaSeleccionado) {
-            axios.post(`http://localhost:5000/historial/listarCambios`, {
+            axios.post(`${HOST}/historial/listarCambios`, {
                 idEntidad: preguntaSeleccionado.idPregunta,
                 tipoEntidad: "pregunta",
             })

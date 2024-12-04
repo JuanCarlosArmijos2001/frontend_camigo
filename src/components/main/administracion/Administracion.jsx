@@ -50,6 +50,7 @@ const Administracion = () => {
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [showPeriodosAnteriores, setShowPeriodosAnteriores] = useState(false);
     const [shouldUpdateResumen, setShouldUpdateResumen] = useState(0);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         obtenerDocentes();
@@ -77,7 +78,7 @@ const Administracion = () => {
 
     const obtenerDocentes = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/sesionUsuario/listarDocentes`);
+            const response = await axios.get(`${HOST}/sesionUsuario/listarDocentes`);
             setDocentes(response.data);
         } catch (error) {
             console.error('Error al obtener docentes:', error);
@@ -86,7 +87,7 @@ const Administracion = () => {
 
     const obtenerAdministradores = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/sesionUsuario/listarAdministradores`);
+            const response = await axios.get(`${HOST}/sesionUsuario/listarAdministradores`);
             setAdministradores(response.data);
         } catch (error) {
             console.error('Error al obtener administradores:', error);
@@ -95,7 +96,7 @@ const Administracion = () => {
 
     const obtenerPeriodosAcademicos = async () => {
         try {
-            const response = await axios.post(`http://localhost:5000/periodoAcademico/listarPeriodosAcademicosAnteriores`);
+            const response = await axios.post(`${HOST}/periodoAcademico/listarPeriodosAcademicosAnteriores`);
             const periodos = response.data.periodos;
             // console.log('PERIODOS ACADEMICOS:', periodos);
             setPeriodosAcademicos(periodos);
@@ -119,7 +120,7 @@ const Administracion = () => {
 
     const handlePeriodoSubmit = async (data) => {
         try {
-            const response = await axios.post('http://localhost:5000/periodoAcademico/registrarPeriodoAcademico', data);
+            const response = await axios.post(`${HOST}/periodoAcademico/registrarPeriodoAcademico`, data);
             if (response.data.en === 1) {
                 console.log('Período académico registrado con éxito');
                 obtenerPeriodosAcademicos();

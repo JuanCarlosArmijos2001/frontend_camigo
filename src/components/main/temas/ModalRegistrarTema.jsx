@@ -39,6 +39,7 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
     const { usuarioDetalles } = useSesionUsuario();
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarColor, setSnackbarColor] = useState("success");
+    const HOST = import.meta.env.VITE_HOST;
 
     const handleClose = () => {
         limpiarCampos();
@@ -135,7 +136,7 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
         };
 
         const response = await axios.post(
-            `http://localhost:5000/temas/registrarTema`,
+            `${HOST}/temas/registrarTema`,
             datosFormulario,
             {
                 headers: {
@@ -149,7 +150,7 @@ export default function ModalRegistrarTema({ cargarTemasGestionar, cargarTemasGe
             const nuevoTemaId = response.data.idTema;
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} creó el tema con el título: "${cleanHtmlTags(titulo)}"`;
 
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "tema",
                 idTema: nuevoTemaId,
                 detalles: mensaje,

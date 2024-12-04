@@ -25,6 +25,7 @@ const GestionarEjercicios = () => {
     const [historialCambios, setHistorialCambios] = useState([]);
     const [showHistorialModal, setShowHistorialModal] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (subtemaSeleccionado) {
@@ -42,7 +43,7 @@ const GestionarEjercicios = () => {
         };
 
         axios
-            .post(`http://localhost:5000/ejercicios/listarEjercicios`, parametros)
+            .post(`${HOST}/ejercicios/listarEjercicios`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     setEjercicios(response.data.ejercicios);
@@ -60,7 +61,7 @@ const GestionarEjercicios = () => {
     const cargarHistorialCambios = () => {
         if (ejercicioSeleccionado) {
             axios
-                .post(`http://localhost:5000/historial/listarCambios`, {
+                .post(`${HOST}/historial/listarCambios`, {
                     idEntidad: ejercicioSeleccionado.idEjercicio,
                     tipoEntidad: "ejercicio",
                 })
@@ -89,7 +90,7 @@ const GestionarEjercicios = () => {
     //         const nuevoEstado = ejercicioSeleccionado.estado === 1 ? -1 : 1;
 
     //         axios
-    //             .post(`http://localhost:5000/ejercicios/activarDesactivarEjercicio`, {
+    //             .post(`${HOST}/ejercicios/activarDesactivarEjercicio`, {
     //                 id: ejercicioSeleccionado.idEjercicio,
     //                 estado: nuevoEstado,
     //             })
@@ -113,7 +114,7 @@ const GestionarEjercicios = () => {
             const mensaje = `${usuarioDetalles.detallesPersona.nombres} ${accion} el ejercicio con el título: "${tituloLimpio}"`;
     
             axios
-                .post(`http://localhost:5000/ejercicios/activarDesactivarEjercicio`, {
+                .post(`${HOST}/ejercicios/activarDesactivarEjercicio`, {
                     id: ejercicioSeleccionado.idEjercicio,
                     estado: nuevoEstado,
                 })
@@ -141,7 +142,7 @@ const GestionarEjercicios = () => {
 
     const registrarCambioHistorial = (idEjercicio, detalles) => {
         axios
-            .post(`http://localhost:5000/historial/registrarCambio`, {
+            .post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "ejercicio",
                 idTema: null,
                 idSubtema: subtemaSeleccionado.idSubtema,

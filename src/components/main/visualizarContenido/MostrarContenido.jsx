@@ -53,6 +53,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [liked, setLiked] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState('');
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         setOpcionSeleccionada('');
@@ -73,7 +74,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
         const fetchLikeStatus = async () => {
             if (usuarioDetalles.id && temaSeleccionado?.idTema) {
                 try {
-                    const response = await axios.post('http://localhost:5000/valoracion/valoracionStatus', {
+                    const response = await axios.post(`${HOST}/valoracion/valoracionStatus`, {
                         idUsuario: usuarioDetalles.id,
                         idTema: temaSeleccionado.idTema
                     });
@@ -95,7 +96,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
 
     const handleLike = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/valoracion/valoracionTemas', {
+            const response = await axios.post(`${HOST}/valoracion/valoracionTemas`, {
                 idUsuario: usuarioDetalles.id,
                 idTema: temaSeleccionado.idTema
             });
@@ -310,7 +311,7 @@ const MostrarContenido = ({ setProgresoUsuario }) => {
         if (isOptionCorrect) {
             setFeedbackMessage('¡Respuesta correcta! Bien hecho.');
             try {
-                const response = await axios.post(`http://localhost:5000/preguntas/completarPregunta`, {
+                const response = await axios.post(`${HOST}/preguntas/completarPregunta`, {
                     idPregunta: preguntaSeleccionado.idPregunta,
                     idEjercicio: ejercicioSeleccionado.idEjercicio,
                     idSubtema: subtemaSeleccionado.idSubtema,

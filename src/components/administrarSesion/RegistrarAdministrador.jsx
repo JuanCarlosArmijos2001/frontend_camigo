@@ -47,6 +47,7 @@ const RegistrarAdministrador = ({ obtenerAdministradores, onClose }) => {
 
     const [registroExitoso, setRegistroExitoso] = useState(false);
     const [error, setError] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -84,7 +85,7 @@ const RegistrarAdministrador = ({ obtenerAdministradores, onClose }) => {
         try {
             const usuarioConExternalId = { ...usuario, external_id: usuario.externalId };
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/registro`,
+                `${HOST}/sesionUsuario/registro`,
                 usuarioConExternalId,
                 {
                     headers: {

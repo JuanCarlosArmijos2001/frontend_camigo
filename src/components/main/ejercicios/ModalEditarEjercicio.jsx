@@ -76,6 +76,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
     const handleRestriccionesChange = (value) => setRestricciones(value);
     const handleSolucionChange = (value) => setSolucion(value);
     const handleRetroalimentacionChange = (value) => setRetroalimentacion(value);
+    const HOST = import.meta.env.VITE_HOST;
 
     const toolbarOptions = [
         [{ header: "1" }, { header: "2" }],
@@ -148,7 +149,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
         };
 
         const response = await axios.post(
-            `http://localhost:5000/ejercicios/editarEjercicio`,
+            `${HOST}/ejercicios/editarEjercicio`,
             datosFormulario,
             {
                 headers: {
@@ -174,7 +175,7 @@ export default function ModalEditarEjercicio({ cargarEjercicios, ejercicioParaEd
             const mensaje = `Se editó el ejercicio con el título: "${cleanHtmlTags(titulo)}"`;
 
             const usuarioId = usuarioDetalles.id;
-            await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+            await axios.post(`${HOST}/historial/registrarCambio`, {
                 tipoEntidad: "ejercicio",
                 idEjercicio: ejercicioParaEditar.idEjercicio,
                 detalles: mensaje,

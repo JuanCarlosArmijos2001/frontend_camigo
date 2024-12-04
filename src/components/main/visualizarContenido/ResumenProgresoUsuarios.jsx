@@ -35,11 +35,12 @@ const ResumenProgresoUsuarios = () => {
     const [resumenProgreso, setResumenProgreso] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const fetchResumenProgreso = async () => {
             try {
-                const response = await axios.post('http://localhost:5000/periodoAcademico/resumenProgresoUsuariosActual');
+                const response = await axios.post(`${HOST}/periodoAcademico/resumenProgresoUsuariosActual`);
                 if (response.data.en === 1) {
                     setResumenProgreso(response.data.resumen);
                 } else {

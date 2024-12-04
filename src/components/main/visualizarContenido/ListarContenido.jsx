@@ -22,6 +22,7 @@ const ListarContenido = ({ progresoUsuario }) => {
     const { subtemaSeleccionado, setSubtemaSeleccionado } = useSubtemaSeleccionado();
     const { ejercicioSeleccionado, setEjercicioSeleccionado } = useEjercicioSeleccionado();
     const { preguntaSeleccionado, setPreguntaSeleccionado } = usePreguntaSeleccionado();
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         // console.log("====================================");
@@ -44,7 +45,7 @@ const ListarContenido = ({ progresoUsuario }) => {
             mensaje: "temas",
         };
 
-        axios.post(`http://localhost:5000/temas/listarTemas`, parametros)
+        axios.post(`${HOST}/temas/listarTemas`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     const temasActivos = response.data.temas.filter(tema => tema.estado === 1);
@@ -65,7 +66,7 @@ const ListarContenido = ({ progresoUsuario }) => {
             mensaje: "subtemas",
         };
 
-        axios.post(`http://localhost:5000/subtemas/listarSubtemas`, parametros)
+        axios.post(`${HOST}/subtemas/listarSubtemas`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     const subtemasActivos = response.data.subtemas.filter(subtema => subtema.estado === 1);
@@ -88,7 +89,7 @@ const ListarContenido = ({ progresoUsuario }) => {
             mensaje: "ejercicios",
         };
 
-        axios.post(`http://localhost:5000/ejercicios/listarEjercicios`, parametros)
+        axios.post(`${HOST}/ejercicios/listarEjercicios`, parametros)
             .then((response) => {
                 if (response.data.en === 1) {
                     const ejerciciosActivos = response.data.ejercicios.filter(ejercicio => ejercicio.estado === 1);
@@ -105,7 +106,7 @@ const ListarContenido = ({ progresoUsuario }) => {
     };
 
     const cargarPreguntas = (ejercicio) => {
-        axios.post(`http://localhost:5000/preguntas/listarPreguntas`, {
+        axios.post(`${HOST}/preguntas/listarPreguntas`, {
             idEjercicio: ejercicio.idEjercicio,
             idUsuario: usuarioDetalles.id,
             mensaje: "preguntas",

@@ -42,6 +42,7 @@ export default function ModalEditarTema({ cargarTemasGestionar, cargarTemasGener
     const [snackbarColor, setSnackbarColor] = useState("success");
     const { usuarioDetalles } = useSesionUsuario();
     const { setTemaSeleccionado } = useTemaSeleccionado();
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (temaParaEditar) {
@@ -127,7 +128,7 @@ export default function ModalEditarTema({ cargarTemasGestionar, cargarTemasGener
             };
 
             const response = await axios.post(
-                `http://localhost:5000/temas/editarTema`,
+                `${HOST}/temas/editarTema`,
                 datosFormulario,
                 {
                     headers: {
@@ -150,7 +151,7 @@ export default function ModalEditarTema({ cargarTemasGestionar, cargarTemasGener
 
                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el tema con el título: "${cleanHtmlTags(titulo)}"`;
 
-                await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+                await axios.post(`${HOST}/historial/registrarCambio`, {
                     tipoEntidad: "tema",
                     idTema: temaParaEditar.idTema,
                     detalles: mensaje,
@@ -391,7 +392,7 @@ export default function ModalEditarTema({ cargarTemasGestionar, cargarTemasGener
 //             };
 
 //             const response = await axios.post(
-//                 `http://localhost:5000/temas/editarTema`,
+//                 `${HOST}/temas/editarTema`,
 //                 datosFormulario,
 //                 {
 //                     headers: {
@@ -414,7 +415,7 @@ export default function ModalEditarTema({ cargarTemasGestionar, cargarTemasGener
 
 //                 const mensaje = `${usuarioDetalles.detallesPersona.nombres} editó el tema con el título: "${cleanHtmlTags(titulo)}"`;
 
-//                 await axios.post(`http://localhost:5000/historial/registrarCambio`, {
+//                 await axios.post(`${HOST}/historial/registrarCambio`, {
 //                     tipoEntidad: "tema",
 //                     idTema: temaParaEditar.idTema,
 //                     detalles: mensaje,

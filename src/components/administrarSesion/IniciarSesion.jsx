@@ -75,7 +75,7 @@
 
 //         try {
 //             const response = await axios.post(
-//                 `http://localhost:5000/sesionUsuario/autenticacion`,
+//                 `${HOST}/sesionUsuario/autenticacion`,
 //                 {
 //                     email,
 //                     clave,
@@ -275,6 +275,8 @@ export default function IniciarSesion() {
     const [userInfo, setUserInfo] = useState(null); // Estado de información del usuario
     const [userInfoAerobase, setUserInfoAerobase] = useState(null);
     const { isAuthenticated, usuarioDetallesKeycloak, iniciarSesionKeycloak, cerrarSesionKeycloak } = useSesionKeycloak();
+    const HOST = import.meta.env.VITE_HOST;
+    console.log('HOST:', HOST);
     
     
 
@@ -295,7 +297,7 @@ export default function IniciarSesion() {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/sesionUsuario/autenticacion`,
+                `${HOST}/sesionUsuario/autenticacion`,
                 { email, clave },
                 {
                     headers: {

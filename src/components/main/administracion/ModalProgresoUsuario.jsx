@@ -40,6 +40,7 @@ const StyledTable = styled(Table)({
 const ModalProgresoUsuario = ({ open, onClose, selectedPeriodoAcademico, selectedUserId }) => {
     const [progressData, setProgressData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (open && selectedPeriodoAcademico && selectedUserId) {
@@ -50,7 +51,7 @@ const ModalProgresoUsuario = ({ open, onClose, selectedPeriodoAcademico, selecte
     const fetchProgressData = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/periodoAcademico/detallesProgresoCompleto', {
+            const response = await axios.post(`${HOST}/periodoAcademico/detallesProgresoCompleto`, {
                 idPeriodoAcademico: selectedPeriodoAcademico,
                 idUsuario: selectedUserId
             });

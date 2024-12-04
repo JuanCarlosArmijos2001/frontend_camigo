@@ -23,6 +23,7 @@ const ComentariosForm = () => {
     const [error, setError] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [comentarioEditable, setComentarioEditable] = useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         if (ejercicioSeleccionado) {
@@ -32,7 +33,7 @@ const ComentariosForm = () => {
 
     const cargarComentarios = async () => {
         try {
-            const response = await axios.post(`http://localhost:5000/comentarios/listarComentarios`, {
+            const response = await axios.post(`${HOST}/comentarios/listarComentarios`, {
                 idEjercicio: ejercicioSeleccionado.idEjercicio,
             });
             if (response && response.data) {
@@ -65,13 +66,13 @@ const ComentariosForm = () => {
 
         try {
             if (comentarioEditable) {
-                await axios.post(`http://localhost:5000/comentarios/editarComentario`, {
+                await axios.post(`${HOST}/comentarios/editarComentario`, {
                     id: comentarioEditable.id,
                     nombreUsuario: usuarioDetalles.detallesPersona.nombres,
                     contenido,
                 });
             } else {
-                await axios.post(`http://localhost:5000/comentarios/registrarComentario`, {
+                await axios.post(`${HOST}/comentarios/registrarComentario`, {
                     idEjercicio: ejercicioSeleccionado.idEjercicio,
                     nombreUsuario: usuarioDetalles.detallesPersona.nombres,
                     contenido,
